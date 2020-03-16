@@ -1,6 +1,7 @@
 package com.ts.app.views.reserva;
 
 import com.ts.app.backend.Employee;
+import com.ts.app.backend.booking.InsertBookings;
 import com.ts.app.backend.model.booking;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
@@ -21,7 +22,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.ts.app.MainView;
 import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
@@ -86,7 +89,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			reservar.setVisible(true);
     	    	cancelar.setVisible(true);
     		}
-    		
     		
     		if (check_reservar.getValue().equals(false) && check_modificar.getValue().equals(false)) {
     			reservar.setVisible(false);
@@ -167,16 +169,16 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	notification1.setDuration(3000);
     	notification1.setPosition(Position.MIDDLE);
     	
-    	/*LocalDateTime dia_reserva = LocalDateTime.now();
+    	LocalDateTime dia_reserva = LocalDateTime.now();
     	seleccion_dia.setMin(dia_reserva.toLocalDate());
     	LocalDateTime dias_siguientes = dia_reserva.plusDays(5);
+
     	seleccion_dia.setMax(dias_siguientes.toLocalDate());
-    	
     	Binder<booking> binder = new Binder<>();
     	binder.forField(seleccion_dia).withValidator(
    	        value -> !DayOfWeek.SATURDAY.equals(value.getDayOfWeek()) && !DayOfWeek.SUNDAY.equals(value.getDayOfWeek()),
-    	        "Debes elegir un día entre lunes y viernes").bind(booking::getDia_reservado, booking::setDia_reservado);
-    	*/
+    	        "Debes elegir un día entre lunes y viernes").bind(booking::getArrivalDate, booking::setArrivalDate);
+    	LocalDate dia = seleccion_dia.getValue();
     	cancelar.addClickListener(e -> {
     		pedido.clear();
     		matricula.clear();
@@ -191,17 +193,30 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		seleccion_hora.clear();
     	});
     	
+    	InsertBookings prueba = new InsertBookings();
     	
     	// Imprimimos valores
     	reservar.addClickListener( e -> {
     		
     		String valor_pedido = pedido.getValue();
+    		int numero_pedido = Integer.parseInt(valor_pedido);
+    		
     		String accion = "";
     		String tipo = "";
     		String valor_matricula = matricula.getValue();
     		String dia_reservado = seleccion_dia.getValue().toString();
     		int validez_matricula = 0;
     		int validez_pedido = 0;
+    		int carga_descarga = 0;
+    		int state = 1;
+    		/*seleccion_dia.addValueChangeListener(event -> {
+    		    if (event.getValue() == null) {
+    		        System.out.println("No date selected");
+    		    } else {
+    		    	fecha_reserva = event.getValue();
+    		        System.out.println("Selected date: " + event.getValue());
+    		    }
+    		});*/
     		
     		// Comprobamos si el valor del pedido es correcto
     		if (valor_pedido.matches("^[0-9]{6}")) {
@@ -224,10 +239,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		// Cogemos los valores de carga/descarga y el tipo de camión
     		if(check_descarga.getValue().equals(true)) {
     			accion = "Descarga";	
+    			carga_descarga = 2;
     		}
     		
     		if(check_carga.getValue().equals(true)) {
     			accion = "Carga";	
+    			carga_descarga = 1;
     		}
     		
     		if(check_trailer.getValue().equals(true)) {
@@ -255,6 +272,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         		System.out.println("Matricula: " + valor_matricula.toUpperCase());
         		System.out.println("Dia reserva: " + dia_reservado);
         		
+        		prueba.InsertBooking(valor_matricula, numero_pedido, carga_descarga, dia, dia, state);
+        		System.out.println("Después del prueba");
         		pedido.clear();
         		matricula.clear();
         		check_descarga.setValue(false);

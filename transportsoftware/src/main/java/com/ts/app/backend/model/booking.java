@@ -1,5 +1,6 @@
 package com.ts.app.backend.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class booking {
@@ -8,13 +9,13 @@ public class booking {
 	private String truckPlate;
 	private int order_request;
 	private int loadDownload;
-	private Date bookingDate;
-	private Date arrivalDate;
-	private Date departureDate;
+	private LocalDate bookingDate;
+	private LocalDate arrivalDate;
+	private LocalDate departureDate;
 	private int state;
 	
-	public booking(int id, String truckPlate, int order_request, int loadDownload, Date bookingDate, Date arrivalDate,
-			Date departureDate, int state) {
+	public booking(int id, String truckPlate, int order_request, int loadDownload, LocalDate bookingDate, LocalDate arrivalDate,
+			LocalDate departureDate, int state) {
 		super();
 		this.id = id;
 		this.truckPlate = truckPlate;
@@ -59,27 +60,27 @@ public class booking {
 		this.loadDownload = loadDownload;
 	}
 
-	public Date getBookingDate() {
+	public LocalDate getBookingDate() {
 		return bookingDate;
 	}
 
-	public void setBookingDate(Date bookingDate) {
+	public void setBookingDate(LocalDate bookingDate) {
 		this.bookingDate = bookingDate;
 	}
 
-	public Date getArrivalDate() {
+	public LocalDate getArrivalDate() {
 		return arrivalDate;
 	}
 
-	public void setArrivalDate(Date arrivalDate) {
+	public void setArrivalDate(LocalDate arrivalDate) {
 		this.arrivalDate = arrivalDate;
 	}
 
-	public Date getDepartureDate() {
+	public LocalDate getDepartureDate() {
 		return departureDate;
 	}
 
-	public void setDepartureDate(Date departureDate) {
+	public void setDepartureDate(LocalDate departureDate) {
 		this.departureDate = departureDate;
 	}
 
