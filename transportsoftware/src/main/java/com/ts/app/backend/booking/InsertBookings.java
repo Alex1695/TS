@@ -4,7 +4,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
-
+@Deprecated
 public class InsertBookings {
 	
 	//private static Connection conex = null;

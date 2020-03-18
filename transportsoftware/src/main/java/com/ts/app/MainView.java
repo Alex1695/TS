@@ -1,8 +1,12 @@
 package com.ts.app;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -21,6 +25,7 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import com.ts.app.views.tft.TFTView;
+import com.ts.app.backend.BBDD_Conection;
 import com.ts.app.views.admin.AdminView;
 import com.ts.app.views.reserva.ReservaView;
 import com.ts.app.views.transportsoftware.TransportSoftwareView;
@@ -34,8 +39,14 @@ import com.ts.app.views.transportsoftware.TransportSoftwareView;
 public class MainView extends AppLayout {
 
     private final Tabs menu;
+    Connection conexion;
+    //Language diccionary
+    Properties lang_dicc;
 
     public MainView() {
+    	
+    	init();
+			
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, new DrawerToggle());
         menu = createMenuTabs();
@@ -91,5 +102,34 @@ public class MainView extends AppLayout {
                     && ((RouterLink) child).getHref().equals(target);
         }).findFirst();
         tabToSelect.ifPresent(tab -> menu.setSelectedTab((Tab) tab));
+    }
+    
+    private void init() {
+    	//BBDD Conection
+    	try {
+    		conexion = BBDD_Conection.getConexionInstance();
+    	}catch(Exception e) {
+    		System.out.println("ERROR AL ESTABLECER UNA CONEXION CON EL SERVIDOR MYSQL");
+    		e.printStackTrace();
+    	}
+    	
+//    	//cargamos el diccionario de la app
+//    	try {
+//			app_language("lang_ES");
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//		}
+    }
+    	
+    /**
+     * Method to load selected laguage diccionary from src/main/resources
+     */
+    private void app_language(String lang) throws IOException {
+        //Importante agregar el resource directorie en el .pom
+        lang_dicc = new Properties();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        try(InputStream resourceStream = loader.getResourceAsStream(lang+".properties")) {
+            lang_dicc.load(resourceStream);
+        }
     }
 }

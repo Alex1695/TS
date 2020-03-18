@@ -3,6 +3,7 @@ package com.ts.app.views.reserva;
 import com.ts.app.backend.Employee;
 import com.ts.app.backend.booking.InsertBookings;
 import com.ts.app.backend.model.booking;
+import com.ts.app.backend.service.BookingService;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -193,7 +194,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		seleccion_hora.clear();
     	});
     	
-    	InsertBookings prueba = new InsertBookings();
+    	//InsertBookings prueba = new InsertBookings();
     	
     	// Imprimimos valores
     	reservar.addClickListener( e -> {
@@ -272,7 +273,9 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         		System.out.println("Matricula: " + valor_matricula.toUpperCase());
         		System.out.println("Dia reserva: " + dia_reservado);
         		
-        		prueba.InsertBooking(valor_matricula, numero_pedido, carga_descarga, dia, dia, state);
+        		//prueba.InsertBooking(valor_matricula, numero_pedido, carga_descarga, dia, dia, state);
+        		BookingService.create(valor_matricula, numero_pedido, carga_descarga, dia, state);
+        		
         		System.out.println("Después del prueba");
         		pedido.clear();
         		matricula.clear();
