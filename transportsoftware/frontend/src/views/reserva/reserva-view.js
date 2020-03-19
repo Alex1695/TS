@@ -5,13 +5,14 @@ import '@vaadin/vaadin-form-layout/vaadin-form-item.js';
 import '@vaadin/vaadin-button/vaadin-button.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout.js';
-import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
 import '@vaadin/vaadin-date-picker/src/vaadin-date-picker.js';
 import '@vaadin/vaadin-time-picker/src/vaadin-time-picker.js';
 import '@vaadin/vaadin-text-field/vaadin-text-field.js';
 import '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
 import '@vaadin/vaadin-form-layout/src/vaadin-form-item.js';
 import '@vaadin/vaadin-button/src/vaadin-button.js';
+import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
+import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
 
 class ReservaView extends PolymerElement {
   static get template() {
@@ -41,61 +42,48 @@ class ReservaView extends PolymerElement {
  <vaadin-form-layout style="align-self: center;">
   <vaadin-form-item style="width: 100%;">
    <label slot="label">¿Qué desea hacer?</label>
-   <vaadin-checkbox id="check_reservar">
+   <vaadin-checkbox id="check_book">
      Reservar muelle 
    </vaadin-checkbox>
-   <vaadin-checkbox id="check_modificar">
+   <vaadin-checkbox id="check_modify">
      Modificar reserva 
    </vaadin-checkbox>
   </vaadin-form-item>
   <br>
   <vaadin-form-item style="width: 450px;">
    <label slot="label">Pedido</label>
-   <vaadin-text-field id="pedido" style="width: 300px;"></vaadin-text-field>
+   <vaadin-text-field id="order" style="width: 300px;"></vaadin-text-field>
   </vaadin-form-item>
   <vaadin-form-item style="width: 420px;">
    <label slot="label">Matrícula</label>
-   <vaadin-text-field id="matricula" class="full-width" value="" style="width: 300px;"></vaadin-text-field>
+   <vaadin-text-field id="plate" class="full-width" value="" style="width: 300px;"></vaadin-text-field>
   </vaadin-form-item>
   <br>
   <vaadin-form-item colspan="2">
    <label slot="label">Acción</label>
-   <vaadin-checkbox id="check_descarga">
-     Descarga 
-   </vaadin-checkbox>
-   <vaadin-checkbox id="check_carga">
-     Carga 
-   </vaadin-checkbox>
+   <vaadin-combo-box id="combo_action" style="width: 300px;" page-size="5"></vaadin-combo-box>
   </vaadin-form-item>
   <vaadin-form-item colspan="2">
    <label slot="label">Tipo de camión</label>
-   <vaadin-checkbox id="check_trailer">
-     Trailer 
-   </vaadin-checkbox>
-   <vaadin-checkbox id="check_furgoneta">
-     Furgoneta 
-   </vaadin-checkbox>
-   <vaadin-checkbox id="check_lona">
-     Lona 
-   </vaadin-checkbox>
+   <vaadin-combo-box id="combo_type" style="width: 300px;"></vaadin-combo-box>
   </vaadin-form-item>
   <vaadin-form-item style="width: 450px;">
    <label slot="label">Fecha de reserva</label>
-   <vaadin-date-picker style="flex-grow: 0; width: 300px;" id="seleccion_dia"></vaadin-date-picker>
+   <vaadin-date-picker style="flex-grow: 0; width: 300px;" id="date_selection"></vaadin-date-picker>
   </vaadin-form-item>
   <vaadin-form-item>
    <label slot="label">Hora de reserva</label>
-   <vaadin-time-picker id="seleccion_hora" style="width: 300px;" max="14:00:00.00" min="06:00:00.00" value="06:00"></vaadin-time-picker>
+   <vaadin-time-picker id="hour_selection" style="width: 300px;" max="14:00:00.00" min="06:00:00.00" value="06:00"></vaadin-time-picker>
   </vaadin-form-item>
  </vaadin-form-layout>
  <vaadin-horizontal-layout style="display:flex; flex-wrap:wrap-reverse; width:100%; justify-content: flex-end;">
-  <vaadin-button theme="primary error" id="cancelar_reserva">
+  <vaadin-button theme="primary error" id="cancel_booking">
     Cancelar reserva 
   </vaadin-button>
-  <vaadin-button theme="tertiary" id="cancelar" slot="">
+  <vaadin-button theme="tertiary" id="cancel" slot="">
     Vaciar selección 
   </vaadin-button>
-  <vaadin-button theme="primary" id="reservar">
+  <vaadin-button theme="primary" id="reserve_modify">
     Save 
   </vaadin-button>
  </vaadin-horizontal-layout>

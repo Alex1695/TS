@@ -10,6 +10,9 @@ public class order {
 		this.id = id;
 		this.order_request = order_request;
 	}
+	
+	public order() {}
+	
 	public int getId() {
 		return id;
 	}

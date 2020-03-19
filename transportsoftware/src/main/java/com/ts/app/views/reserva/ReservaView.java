@@ -3,6 +3,7 @@ package com.ts.app.views.reserva;
 import com.ts.app.backend.Employee;
 import com.ts.app.backend.booking.InsertBookings;
 import com.ts.app.backend.model.booking;
+import com.ts.app.backend.model.order;
 import com.ts.app.backend.service.BookingService;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
@@ -25,10 +26,15 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.ts.app.MainView;
 import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
+import com.vaadin.flow.component.combobox.ComboBox;
 
 @Route(value = "reserva", layout = MainView.class)
 @PageTitle("Reserva")
@@ -44,252 +50,233 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 
     }
 
-    @Id("check_trailer")
-	private Checkbox check_trailer;
-	@Id("check_furgoneta")
-	private Checkbox check_furgoneta;
-	@Id("check_lona")
-	private Checkbox check_lona;
-	@Id("pedido")
-	private TextField pedido;
-	@Id("matricula")
-	private TextField matricula;
-	@Id("check_descarga")
-	private Checkbox check_descarga;
-	@Id("check_carga")
-	private Checkbox check_carga;
-	@Id("reservar")
-	private Button reservar;
-	@Id("cancelar")
-	private Button cancelar;
-	@Id("seleccion_dia")
-	private DatePicker seleccion_dia;
-	@Id("seleccion_hora")
-	private TimePicker seleccion_hora;
-	@Id("check_reservar")
-	private Checkbox check_reservar;
-	@Id("check_modificar")
-	private Checkbox check_modificar;
-	@Id("cancelar_reserva")
-	private Button cancelar_reserva;
+	@Id("order")
+	private TextField order;
+	@Id("plate")
+	private TextField plate;
+	@Id("reserve_modify")
+	private Button reserve_modify;
+	@Id("cancel")
+	private Button cancel;
+	@Id("date_selection")
+	private DatePicker date_selection;
+	@Id("hour_selection")
+	private TimePicker hour_selection;
+	@Id("check_book")
+	private Checkbox check_book;
+	@Id("check_modify")
+	private Checkbox check_modify;
+	@Id("cancel_booking")
+	private Button cancel_booking;
+	@Id("combo_action")
+	private ComboBox<String> combo_action;
+	@Id("combo_type")
+	private ComboBox<String> combo_type;
 
     public ReservaView() {
 
-    	reservar.setVisible(false);
-    	cancelar.setVisible(false);
-    	cancelar_reserva.setVisible(false);
+    	reserve_modify.setVisible(false);
+    	cancel.setVisible(false);
+    	cancel_booking.setVisible(false);
+    	combo_action.setItems("Descarga", "Carga");
+    	combo_type.setItems("Trailer", "Lona", "Furgoneta");
+    	order.setClearButtonVisible(true);
+    	plate.setClearButtonVisible(true);
     	
-    	pedido.setClearButtonVisible(true);
-    	matricula.setClearButtonVisible(true);
-    	
-    	/////////////////////// RESERVAR/MODIFICACIÓN //////////////////////////////////////
-    	check_reservar.addValueChangeListener(e -> {
-    		if (check_reservar.getValue().equals(true)) {
-    			check_modificar.setValue(false);
-    			reservar.setText("Reservar");
-    			reservar.setVisible(true);
-    	    	cancelar.setVisible(true);
+    	check_book.addValueChangeListener(e -> {
+    		if (check_book.getValue().equals(true)) {
+    			check_modify.setValue(false);
+    			reserve_modify.setText("Reservar");
+    			reserve_modify.setVisible(true);
+    			cancel.setVisible(true);
     		}
     		
-    		if (check_reservar.getValue().equals(false) && check_modificar.getValue().equals(false)) {
-    			reservar.setVisible(false);
-    	    	cancelar.setVisible(false);
-    	    	cancelar_reserva.setVisible(false);
+    		if (check_book.getValue().equals(false) && check_modify.getValue().equals(false)) {
+    			reserve_modify.setVisible(false);
+    			cancel.setVisible(false);
+    			cancel_booking.setVisible(false);
     		}
-
     	});
     	
-    	check_modificar.addValueChangeListener(e -> {
-    		if (check_modificar.getValue().equals(true)) {
-    			check_reservar.setValue(false);
-    			reservar.setText("Modificar");
-    			reservar.setVisible(true);
-    	    	cancelar.setVisible(true);
-    	    	cancelar_reserva.setVisible(true);
+    	check_modify.addValueChangeListener(e -> {
+    		if (check_modify.getValue().equals(true)) {
+    			check_book.setValue(false);
+    			reserve_modify.setText("Modificar");
+    			reserve_modify.setVisible(true);
+    			cancel.setVisible(true);
+    			cancel_booking.setVisible(true);
     		}
     		
-    		if (check_reservar.getValue().equals(true)) {
-    			cancelar_reserva.setVisible(false);
-    		}
+    		if (check_book.getValue().equals(true)) 
+    			cancel_booking.setVisible(false);
     		
-    		if (check_reservar.getValue().equals(false) && check_modificar.getValue().equals(false)) {
-    			reservar.setVisible(false);
-    	    	cancelar.setVisible(false);
-    	    	cancelar_reserva.setVisible(false);
+    		
+    		if (check_book.getValue().equals(false) && check_modify.getValue().equals(false)) {
+    			reserve_modify.setVisible(false);
+    			cancel.setVisible(false);
+    			cancel_booking.setVisible(false);
     		}
     	});
     	
+    	Label booking_correct = new Label("Reserva realizada!");
+    	Notification notification_booking_correct = new Notification(booking_correct);
+    	notification_booking_correct.setDuration(3000);
+    	notification_booking_correct.setPosition(Position.MIDDLE);
     	
-    	////////////////////// ELECCIÓN DE CARGA/DESCARGA /////////////////////////////
-    	check_carga.addValueChangeListener(e -> {
-    		if (check_carga.getValue().equals(true)) {
-    			check_descarga.setValue(false);
-    		}
+    	Label booking_wrong = new Label("Faltan datos o son incorrectos!");
+    	Notification notification_booking_wrong = new Notification(booking_wrong);
+    	notification_booking_wrong.setDuration(3000);
+    	notification_booking_wrong.setPosition(Position.MIDDLE);
+    	
+    	Label order_wrong = new Label("Pedido no válido!");
+    	Notification notification_order_wrong = new Notification(order_wrong);
+    	notification_order_wrong.setDuration(3000);
+    	notification_order_wrong.setPosition(Position.MIDDLE);
+    	
+    	LocalDateTime day_reserve = LocalDateTime.now();
+    	date_selection.setMin(day_reserve.toLocalDate());
 
-    	});
-    	
-    	check_descarga.addValueChangeListener(e -> {
-    		if (check_descarga.getValue().equals(true)) {
-    			check_carga.setValue(false);
-    		}
-    	});
-    	
-    	/////////////////////////////////// ELECCIÓN TIPO CAMIÓN ////////////////////////
-    	check_trailer.addValueChangeListener(e -> {
-    		if(check_trailer.getValue().equals(true)) {
-	    		check_furgoneta.setValue(false);
-	    		check_lona.setValue(false);
-    		}
-
-    	});
-    	
-    	check_furgoneta.addValueChangeListener(e -> {
-    		if(check_furgoneta.getValue().equals(true)) {
-	    		check_trailer.setValue(false);
-	    		check_lona.setValue(false);
-    		}
-
-    	});
-    	
-    	check_lona.addValueChangeListener(e -> {
-    		if(check_lona.getValue().equals(true)) {
-	    		check_furgoneta.setValue(false);
-	    		check_trailer.setValue(false);
-    		}
-
-    	});
-
-    	Label content = new Label("Reserva realizada!");
-    	Notification notification = new Notification(content);
-    	notification.setDuration(3000);
-    	notification.setPosition(Position.MIDDLE);
-    	
-    	Label content1 = new Label(
-    	        "Faltan datos o son incorrectos!");
-    	Notification notification1 = new Notification(content1);
-    	notification1.setDuration(3000);
-    	notification1.setPosition(Position.MIDDLE);
-    	
-    	LocalDateTime dia_reserva = LocalDateTime.now();
-    	seleccion_dia.setMin(dia_reserva.toLocalDate());
-    	LocalDateTime dias_siguientes = dia_reserva.plusDays(5);
-
-    	seleccion_dia.setMax(dias_siguientes.toLocalDate());
     	Binder<booking> binder = new Binder<>();
-    	binder.forField(seleccion_dia).withValidator(
+    	binder.forField(date_selection).withValidator(
    	        value -> !DayOfWeek.SATURDAY.equals(value.getDayOfWeek()) && !DayOfWeek.SUNDAY.equals(value.getDayOfWeek()),
     	        "Debes elegir un día entre lunes y viernes").bind(booking::getArrivalDate, booking::setArrivalDate);
-    	LocalDate dia = seleccion_dia.getValue();
-    	cancelar.addClickListener(e -> {
-    		pedido.clear();
-    		matricula.clear();
-    		check_descarga.setValue(false);
-    		check_carga.setValue(false);
-    		check_furgoneta.setValue(false);
-    		check_lona.setValue(false);
-    		check_trailer.setValue(false);
-    		check_reservar.setValue(false);
-    		check_modificar.setValue(false);
-    		seleccion_dia.clear();
-    		seleccion_hora.clear();
+    	
+    	cancel.addClickListener(e -> {
+    		order.clear();
+    		plate.clear();
+    		check_book.setValue(false);
+    		check_modify.setValue(false);
+    		date_selection.clear();
+    		hour_selection.clear();
     	});
     	
-    	//InsertBookings prueba = new InsertBookings();
+    	Obtain_booking_data data = new Obtain_booking_data();
+		
+    	combo_action.addValueChangeListener(e -> {
+    		data.setAction(e.getValue());
+    	});
     	
-    	// Imprimimos valores
-    	reservar.addClickListener( e -> {
-    		
-    		String valor_pedido = pedido.getValue();
-    		int numero_pedido = Integer.parseInt(valor_pedido);
-    		
-    		String accion = "";
-    		String tipo = "";
-    		String valor_matricula = matricula.getValue();
-    		String dia_reservado = seleccion_dia.getValue().toString();
-    		int validez_matricula = 0;
-    		int validez_pedido = 0;
-    		int carga_descarga = 0;
+    	combo_type.addValueChangeListener(e -> {
+    		data.setType(e.getValue());
+    	});
+    	
+    	plate.addValueChangeListener(e -> {
+    		data.setPlate(plate.getValue());
+    	});
+    	
+    	order.addValueChangeListener(e -> {
+    		data.setOrder(order.getValue());
+    	});
+    	
+    	date_selection.addValueChangeListener(e -> {
+    		data.setDay(date_selection.getValue());
+    	});
+    	
+    	BookingService bookings = new BookingService();
+    	
+    	List<String> orders = bookings.read_order();
+    	
+    	reserve_modify.addClickListener( e -> {
+        	
+        	String value_plate = data.getPlate();
+        	String value_type = data.getType();
+        	int value_order = data.getOrder();
+        	String order_string =  Integer.toString(value_order);
+        	int load_download = data.getAction();
+        	LocalDate day = data.getDay();
     		int state = 1;
-    		/*seleccion_dia.addValueChangeListener(event -> {
-    		    if (event.getValue() == null) {
-    		        System.out.println("No date selected");
-    		    } else {
-    		    	fecha_reserva = event.getValue();
-    		        System.out.println("Selected date: " + event.getValue());
-    		    }
-    		});*/
     		
-    		// Comprobamos si el valor del pedido es correcto
-    		if (valor_pedido.matches("^[0-9]{6}")) {
-    			System.out.println("Pedido valido");
-    			validez_pedido = 1;
+    		if (value_plate != "Invalida" && value_order != 0 && value_type != null && day != null && load_download != 0
+    				 && check_book.getValue().equals(true) || check_modify.getValue().equals(true)){
+    			
+    			if (orders.contains(order_string) == true) {
+    				
+    				BookingService.create(value_plate, value_order, load_download, day, state);
+    				
+    				order.clear();
+            		plate.clear();
+            		check_book.setValue(false);
+            		check_modify.setValue(false);
+            		combo_action.clear();
+            		combo_type.clear();
+            		notification_booking_correct.open();
+    			} else {
+    				notification_order_wrong.open();
+    			}
     		} else {
-    			System.out.println("Pedido invalido");
-    			validez_pedido = 0;
+    			notification_booking_wrong.open();
     		}
-    		
-    		// Comprobamos si la matrícula tiene el formato correcto
-    		if (valor_matricula.toUpperCase().matches("^[0-9]{4}[A-Z]{3}$")) {
-		        System.out.println("Matrícula válida");
-		        validez_matricula = 1;
-		    }else{
-		    	validez_matricula = 0;
-		        System.out.println("Matrícula inválida");
-		    }   
-    		 
-    		// Cogemos los valores de carga/descarga y el tipo de camión
-    		if(check_descarga.getValue().equals(true)) {
-    			accion = "Descarga";	
-    			carga_descarga = 2;
-    		}
-    		
-    		if(check_carga.getValue().equals(true)) {
-    			accion = "Carga";	
-    			carga_descarga = 1;
-    		}
-    		
-    		if(check_trailer.getValue().equals(true)) {
-    			tipo = "Trailer";	
-    		}
-    		
-    		if(check_furgoneta.getValue().equals(true)) {
-    			tipo = "Furgoneta";	
-    		}
-    		
-    		if(check_lona.getValue().equals(true)) {
-    			tipo = "Lona";	
-    		}
-    		
-    		// Si todos los datos son correctos
-    		if (validez_matricula == 1 && validez_pedido == 1
-    				&& (check_descarga.getValue().equals(true) || check_carga.getValue().equals(true)) &&
-    				(check_furgoneta.getValue().equals(true) || check_trailer.getValue().equals(true) || 
-    						check_lona.getValue().equals(true) && check_reservar.getValue().equals(true) || check_modificar.getValue().equals(true))){
-    			notification.open();
-    			System.out.println("===================");
-    			System.out.println("Pedido: " + valor_pedido);
-        		System.out.println("Accion: " + accion);
-        		System.out.println("Tipo: " + tipo);
-        		System.out.println("Matricula: " + valor_matricula.toUpperCase());
-        		System.out.println("Dia reserva: " + dia_reservado);
-        		
-        		//prueba.InsertBooking(valor_matricula, numero_pedido, carga_descarga, dia, dia, state);
-        		BookingService.create(valor_matricula, numero_pedido, carga_descarga, dia, state);
-        		
-        		System.out.println("Después del prueba");
-        		pedido.clear();
-        		matricula.clear();
-        		check_descarga.setValue(false);
-        		check_carga.setValue(false);
-        		check_furgoneta.setValue(false);
-        		check_lona.setValue(false);
-        		check_trailer.setValue(false);
-        		check_reservar.setValue(false);
-        		check_modificar.setValue(false);
-    		} else {
-    			notification1.open();
-    		}
-    		
     	});
+    }
+
+	public class Obtain_booking_data {
+    	private int action;
+    	private String type;
+    	private String value_plate;
+    	private int value_order;
+    	private LocalDate day;
+    	
+    	public void setAction(String load_download) {
+    		if (load_download == "Descarga") {
+    			action = 2;
+    			
+    		} else if (load_download == "Carga") {
+    			action = 1;
+    		} else {
+    			action = 0;
+    		}
+    	}
+    	
+    	public int getAction() {
+    		return action;
+    	}
+    	
+    	public void setPlate(String plate) {
+    		if (plate.toUpperCase().matches("^[0-9]{4}[A-Z]{3}$")) {
+    			value_plate = plate;
+		    }else{
+		    	value_plate = "Invalida";
+		    }  
+    	}
+    	
+    	public String getPlate() {
+    		return value_plate;
+    	}
+    	
+    	public void setOrder(String order) {
+    		if (order.matches("^[0-9]{6}")) {
+    			value_order = Integer.parseInt(order);
+    		} else {
+    			value_order = 0;
+    		}
+    	}
+    	
+    	public int getOrder() {
+    		return value_order;
+    	}
+    	
+    	public void setDay(LocalDate day_reserved) {
+    		if(day_reserved == null) {
+    			day = null;
+    		} else if (day_reserved != null){
+    			day = day_reserved;
+    		}
+    	}
+    	
+    	public LocalDate getDay() {
+    		return day;
+    	}
+    	
+    	public void setType(String truck_type) {
+    		if (truck_type == null) {
+    			type = null;
+    		} else {
+    			type = truck_type;
+    		}
+    	}
+    	
+    	public String getType() {
+    		return type;
+    	}
     }
 }
