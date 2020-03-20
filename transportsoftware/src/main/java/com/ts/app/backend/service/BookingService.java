@@ -20,7 +20,7 @@ public class BookingService implements CRUD{
 
 	private List<String> orders = new ArrayList<>();
 	
-	public static boolean create(String truckPlate, int order_request, int loadDownload, LocalDate dia, /*LocalDate arrivalDate,*/
+	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia, /*LocalDate arrivalDate,*/
 		/*LocalDate departureDate,*/ int state)  {
 
 		Connection conn = BBDD_Conection.getConexionInstance();
@@ -31,19 +31,20 @@ public class BookingService implements CRUD{
 
 	    // the mysql insert statement
 
-	    String query = " INSERT INTO TB_bookings (truckPlate, order_request, loadDownload, bookingDate, state) VALUES (?, ?, ?, ?, ?)";
+	    String query = " INSERT INTO TB_bookings (truckPlate, truckType, order_request, loadDownload, bookingDate, state) VALUES (?, ?, ?, ?, ?, ?)";
 	    // create the mysql insert PreparedStatement
     
 	    try {
 	
 	    	PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setString (1, truckPlate);
-			preparedStmt.setInt (2, order_request);
-		    preparedStmt.setInt   (3, loadDownload);
-		    preparedStmt.setDate (4, testDATE);
+			preparedStmt.setInt (2, truckType);
+			preparedStmt.setInt (3, order_request);
+		    preparedStmt.setInt   (4, loadDownload);
+		    preparedStmt.setDate (5, testDATE);
 		    //preparedStmt.setInt    (5, arrivalDate);
 		    //preparedStmt.setInt    (5, departureDate);
-		    preparedStmt.setInt    (5, state);
+		    preparedStmt.setInt    (6, state);
 	
 		    // execute the preparedstatement
 		    preparedStmt.execute();
@@ -79,7 +80,6 @@ public class BookingService implements CRUD{
 				aux = result_orders.getInt("order_request");
 				order_data = Integer.toString(aux);
 				orders.add(order_data);
-				System.out.println("Metido: " + order_data);
 			} 
 			
 		} catch(Exception e) {

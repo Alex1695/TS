@@ -11,6 +11,8 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -35,6 +37,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.ts.app.MainView;
 import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.component.html.NativeButton;
 
 @Route(value = "reserva", layout = MainView.class)
 @PageTitle("Reserva")
@@ -72,9 +76,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private ComboBox<String> combo_action;
 	@Id("combo_type")
 	private ComboBox<String> combo_type;
+	@Id("comprobar")
+	private Button comprobar;
 
     public ReservaView() {
 
+    	comprobar.setVisible(false);
     	reserve_modify.setVisible(false);
     	cancel.setVisible(false);
     	cancel_booking.setVisible(false);
@@ -95,6 +102,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			reserve_modify.setVisible(false);
     			cancel.setVisible(false);
     			cancel_booking.setVisible(false);
+    			comprobar.setVisible(false);
     		}
     	});
     	
@@ -105,6 +113,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			reserve_modify.setVisible(true);
     			cancel.setVisible(true);
     			cancel_booking.setVisible(true);
+    			comprobar.setVisible(true);
+    			
     		}
     		
     		if (check_book.getValue().equals(true)) 
@@ -115,6 +125,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			reserve_modify.setVisible(false);
     			cancel.setVisible(false);
     			cancel_booking.setVisible(false);
+    			comprobar.setVisible(false);
     		}
     	});
     	
@@ -179,19 +190,19 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	reserve_modify.addClickListener( e -> {
         	
         	String value_plate = data.getPlate();
-        	String value_type = data.getType();
+        	int value_type = data.getType();
         	int value_order = data.getOrder();
         	String order_string =  Integer.toString(value_order);
         	int load_download = data.getAction();
         	LocalDate day = data.getDay();
     		int state = 1;
     		
-    		if (value_plate != "Invalida" && value_order != 0 && value_type != null && day != null && load_download != 0
+    		if (value_plate != "Invalida" && value_order != 0 && value_type != 0 && day != null && load_download != 0
     				 && check_book.getValue().equals(true) || check_modify.getValue().equals(true)){
     			
     			if (orders.contains(order_string) == true) {
     				
-    				BookingService.create(value_plate, value_order, load_download, day, state);
+    				BookingService.create(value_plate, value_type, value_order, load_download, day, state);
     				
     				order.clear();
             		plate.clear();
@@ -211,7 +222,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 
 	public class Obtain_booking_data {
     	private int action;
-    	private String type;
+    	private int type;
     	private String value_plate;
     	private int value_order;
     	private LocalDate day;
@@ -269,13 +280,17 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	
     	public void setType(String truck_type) {
     		if (truck_type == null) {
-    			type = null;
-    		} else {
-    			type = truck_type;
+    			type = 0;
+    		} else if (truck_type == "Trailer"){
+    			type = 3;
+    		} else if (truck_type == "Lona") {
+    			type = 2;
+    		} else if (truck_type == "Furgoneta") {
+    			type = 1;
     		}
     	}
     	
-    	public String getType() {
+    	public int getType() {
     		return type;
     	}
     }

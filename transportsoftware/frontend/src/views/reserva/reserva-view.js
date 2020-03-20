@@ -8,11 +8,11 @@ import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout.js';
 import '@vaadin/vaadin-date-picker/src/vaadin-date-picker.js';
 import '@vaadin/vaadin-time-picker/src/vaadin-time-picker.js';
 import '@vaadin/vaadin-text-field/vaadin-text-field.js';
-import '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
 import '@vaadin/vaadin-form-layout/src/vaadin-form-item.js';
 import '@vaadin/vaadin-button/src/vaadin-button.js';
 import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
 import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
+import '@polymer/iron-icon/iron-icon.js';
 
 class ReservaView extends PolymerElement {
   static get template() {
@@ -53,6 +53,9 @@ class ReservaView extends PolymerElement {
   <vaadin-form-item style="width: 450px;">
    <label slot="label">Pedido</label>
    <vaadin-text-field id="order" style="width: 300px;"></vaadin-text-field>
+   <vaadin-button theme="icon" aria-label="Add new" id="comprobar">
+    <iron-icon icon="lumo:search"></iron-icon>
+   </vaadin-button>
   </vaadin-form-item>
   <vaadin-form-item style="width: 420px;">
    <label slot="label">Matrícula</label>
