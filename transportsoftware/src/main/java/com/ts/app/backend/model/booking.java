@@ -13,6 +13,7 @@ public class booking {
 	private LocalDate arrivalDate;
 	private LocalDate departureDate;
 	private int state;
+	private int truckType;
 	
 	public booking(int id, String truckPlate, int order_request, int loadDownload, LocalDate bookingDate, LocalDate arrivalDate,
 			LocalDate departureDate, int state) {
@@ -27,6 +28,17 @@ public class booking {
 		this.state = state;
 	}
 	
+	public booking() {}
+	
+	
+
+	public int getTruckType() {
+		return truckType;
+	}
+
+	public void setTruckType(int truckType) {
+		this.truckType = truckType;
+	}
 
 	public int getId() {
 		return id;

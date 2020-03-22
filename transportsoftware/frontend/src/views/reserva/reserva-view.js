@@ -53,7 +53,7 @@ class ReservaView extends PolymerElement {
   <vaadin-form-item style="width: 450px;">
    <label slot="label">Pedido</label>
    <vaadin-text-field id="order" style="width: 300px;"></vaadin-text-field>
-   <vaadin-button theme="icon" aria-label="Add new" id="comprobar">
+   <vaadin-button theme="icon" aria-label="Add new" id="check">
     <iron-icon icon="lumo:search"></iron-icon>
    </vaadin-button>
   </vaadin-form-item>
