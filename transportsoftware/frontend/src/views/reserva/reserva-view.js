@@ -57,24 +57,24 @@ class ReservaView extends PolymerElement {
     <iron-icon icon="lumo:search"></iron-icon>
    </vaadin-button>
   </vaadin-form-item>
-  <vaadin-form-item style="width: 420px;">
+  <vaadin-form-item style="width: 420px;" id="item_plate">
    <label slot="label">Matrícula</label>
    <vaadin-text-field id="plate" class="full-width" value="" style="width: 300px;"></vaadin-text-field>
   </vaadin-form-item>
   <br>
-  <vaadin-form-item colspan="2">
+  <vaadin-form-item colspan="2" id="item_action">
    <label slot="label">Acción</label>
    <vaadin-combo-box id="combo_action" style="width: 300px;" page-size="5"></vaadin-combo-box>
   </vaadin-form-item>
-  <vaadin-form-item colspan="2">
+  <vaadin-form-item colspan="2" id="item_type">
    <label slot="label">Tipo de camión</label>
    <vaadin-combo-box id="combo_type" style="width: 300px;"></vaadin-combo-box>
   </vaadin-form-item>
-  <vaadin-form-item style="width: 450px;">
+  <vaadin-form-item style="width: 450px;" id="item_date">
    <label slot="label">Fecha de reserva</label>
    <vaadin-date-picker style="flex-grow: 0; width: 300px;" id="date_selection"></vaadin-date-picker>
   </vaadin-form-item>
-  <vaadin-form-item>
+  <vaadin-form-item id="item_hour">
    <label slot="label">Hora de reserva</label>
    <vaadin-time-picker id="hour_selection" style="width: 300px;" max="14:00:00.00" min="06:00:00.00" value="06:00"></vaadin-time-picker>
   </vaadin-form-item>

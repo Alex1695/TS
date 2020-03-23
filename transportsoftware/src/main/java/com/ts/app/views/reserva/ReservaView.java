@@ -6,6 +6,7 @@ import com.ts.app.backend.model.booking;
 import com.ts.app.backend.model.order;
 import com.ts.app.backend.service.BookingService;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -41,6 +42,7 @@ import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 
 @Route(value = "reserva", layout = MainView.class)
 @PageTitle("Reserva")
@@ -80,6 +82,16 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private ComboBox<String> combo_type;
 	@Id("check")
 	private Button check;
+	@Id("item_action")
+	private FormItem item_action;
+	@Id("item_type")
+	private FormItem item_type;
+	@Id("item_date")
+	private FormItem item_date;
+	@Id("item_hour")
+	private FormItem item_hour;
+	@Id("item_plate")
+	private FormItem item_plate;
 
     public ReservaView() {
 
@@ -91,6 +103,9 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	combo_type.setItems("Trailer", "Lona", "Furgoneta");
     	order.setClearButtonVisible(true);
     	plate.setClearButtonVisible(true);
+    	Page reserve_page = new Page(UI.getCurrent());
+    	
+    	BookingService bookings = new BookingService();
     	
     	check_book.addValueChangeListener(e -> {
     		if (check_book.getValue().equals(true)) {
@@ -105,6 +120,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel.setVisible(false);
     			cancel_booking.setVisible(false);
     			check.setVisible(false);
+    			reserve_page.reload();
     		}
     	});
     	
@@ -116,11 +132,11 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel.setVisible(false);
     			cancel_booking.setVisible(false);
     			check.setVisible(true);
-    			plate.setReadOnly(true);
-    			combo_action.setReadOnly(true);
-    			combo_type.setReadOnly(true);
-    			date_selection.setReadOnly(true);
-    			hour_selection.setReadOnly(true);
+    			item_action.setVisible(false);
+    			item_type.setVisible(false);
+    			item_plate.setVisible(false);
+    			item_date.setVisible(false);
+    			item_hour.setVisible(false);
     			
     		}
     		
@@ -134,10 +150,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel_booking.setVisible(false);
     			check.setVisible(false);
     			plate.setReadOnly(false);
-    			combo_action.setReadOnly(false);
-    			combo_type.setReadOnly(false);
-    			date_selection.setReadOnly(false);
-    			hour_selection.setReadOnly(false);
+    			reserve_page.reload();
     		}
     	});
     	
@@ -147,7 +160,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	notification_booking_correct.setPosition(Position.MIDDLE);
     	
     	//mensaje de pedido eliminado
-    	Label booking_delete = new Label("Pedido eliminado");
+    	Label booking_delete = new Label("Pedido eliminado!");
     	Notification notification_booking_delete = new Notification(booking_delete);
     	notification_booking_delete.setDuration(3000);
     	notification_booking_delete.setPosition(Position.MIDDLE);
@@ -175,8 +188,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		plate.clear();
     		check_book.setValue(false);
     		check_modify.setValue(false);
-    		date_selection.clear();
-    		hour_selection.clear();
+    		reserve_page.reload();
     	});
     	
     	Obtain_booking_data data = new Obtain_booking_data();
@@ -201,13 +213,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		data.setDay(date_selection.getValue());
     	});
     	
-    	BookingService bookings = new BookingService();
-    	
-    	List<String> orders = bookings.read_order();
-    	
-    	List<booking> books = bookings.read();
-    	
+    
     	check.addClickListener(e -> {
+        	List<String> orders = bookings.read_order();
+        	List<booking> books = bookings.read();
     		int value_order = data.getOrder();
         	String order_string =  Integer.toString(value_order);
     		if (orders.contains(order_string) == true) {
@@ -217,11 +226,11 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel_booking.setVisible(true);
     			check.setVisible(true);
     			order.setReadOnly(true);
-    			plate.setReadOnly(false);
-    			combo_action.setReadOnly(false);
-    			combo_type.setReadOnly(false);
-    			date_selection.setReadOnly(false);
-    			hour_selection.setReadOnly(false);
+    			item_action.setVisible(true);
+    			item_type.setVisible(true);
+    			item_plate.setVisible(true);
+    			item_date.setVisible(true);
+    			item_hour.setVisible(true);
     			
     			int index = orders.indexOf(order_string);
     			int action = books.get(index).getLoadDownload();
@@ -245,12 +254,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     				combo_type.setValue("Trailer");
     			}
     			
-    		}
+    		} else {
+				notification_order_wrong.open();
+			}
     		
-    		//Page.getCurrent().reload();
     	});
+    	
     	reserve_modify.addClickListener( e -> {
-    			
+        	List<String> orders = bookings.read_order();
+
         	String value_plate = data.getPlate();
         	int value_type = data.getType();
         	int value_order = data.getOrder();
@@ -276,6 +288,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	            		combo_type.clear();
 	            		
 	            		notification_booking_correct.open();
+
 	    			} else {
 	    				notification_order_wrong.open();
 	    			}
@@ -290,16 +303,25 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
             		combo_action.clear();
             		combo_type.clear();
             		order.setReadOnly(false);
-            		
+            		item_action.setVisible(false);
+        			item_type.setVisible(false);
+        			item_plate.setVisible(false);
+        			item_date.setVisible(false);
+        			item_hour.setVisible(false);
+        			
             		booking_correct.setText("Modificación realizada");
             		notification_booking_correct.open();
+            		
+            		
     			} else {
 	    			notification_booking_wrong.open();
 	    		}
     		}
+    		reserve_page.reload();
     	});
     	
     	cancel_booking.addClickListener( e -> {
+    		List<String> orders = bookings.read_order();
     		int value_order = data.getOrder();
         	String order_string =  Integer.toString(value_order);
     		if (orders.contains(order_string) == true) {
@@ -317,10 +339,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		} else {
     			notification_order_wrong.open();
     		}
-    		
+    		reserve_page.reload();
     	});
-    	
-    	
     }
 
 	public class Obtain_booking_data {
