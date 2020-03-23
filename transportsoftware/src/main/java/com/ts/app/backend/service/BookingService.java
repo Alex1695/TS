@@ -22,6 +22,7 @@ public class BookingService implements CRUD{
 	private List<String> orders = new ArrayList<>();
 	private List<booking> bookings = new ArrayList<>();
 	
+	//insertamos pedido nuevo
 	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia, /*LocalDate arrivalDate,*/
 		/*LocalDate departureDate,*/ int state)  {
 
@@ -59,6 +60,7 @@ public class BookingService implements CRUD{
 		}
 	}
 
+	//leemos pedido a modificar
 	@Override
 	public List<booking> read() {
 		// TODO Auto-generated method stub
@@ -86,6 +88,7 @@ public class BookingService implements CRUD{
 		return bookings;
 	}
 	
+	//leemos pedidos
 	@Override
 	public List<String> read_order() {
 		Statement state_orders = null;
@@ -119,6 +122,7 @@ public class BookingService implements CRUD{
 //}
 //
 
+	//modificado de pedido
 	public static boolean update(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia) {
 		// TODO Auto-generated method stub
 		Connection conn = BBDD_Conection.getConexionInstance();
@@ -143,6 +147,30 @@ public class BookingService implements CRUD{
 		    //preparedStmt.setInt    (5, arrivalDate);
 		    //preparedStmt.setInt    (5, departureDate);
 		    preparedStmt.setInt    (5, order_request);
+	
+		    // execute the preparedstatement
+		    preparedStmt.execute();
+		    return true;
+	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	//borrado de pedido
+	public static boolean deleteOrder(int order_request) {
+		// TODO Auto-generated method stub
+		Connection conn = BBDD_Conection.getConexionInstance();
+
+	    String deleteQuery = " DELETE FROM TB_bookings WHERE order_request = ?";
+	    // create the mysql insert PreparedStatement
+    
+	    try {
+	
+	    	PreparedStatement preparedStmt = conn.prepareStatement(deleteQuery);
+			preparedStmt.setInt (1, order_request);
 	
 		    // execute the preparedstatement
 		    preparedStmt.execute();

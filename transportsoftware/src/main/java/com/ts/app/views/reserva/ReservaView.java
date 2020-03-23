@@ -15,6 +15,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -145,6 +146,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	notification_booking_correct.setDuration(3000);
     	notification_booking_correct.setPosition(Position.MIDDLE);
     	
+    	//mensaje de pedido eliminado
+    	Label booking_delete = new Label("Pedido eliminado");
+    	Notification notification_booking_delete = new Notification(booking_delete);
+    	notification_booking_delete.setDuration(3000);
+    	notification_booking_delete.setPosition(Position.MIDDLE);
+    	
     	Label booking_wrong = new Label("Faltan datos o son incorrectos!");
     	Notification notification_booking_wrong = new Notification(booking_wrong);
     	notification_booking_wrong.setDuration(3000);
@@ -240,6 +247,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			
     		}
     		
+    		//Page.getCurrent().reload();
     	});
     	reserve_modify.addClickListener( e -> {
     			
@@ -290,6 +298,29 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    		}
     		}
     	});
+    	
+    	cancel_booking.addClickListener( e -> {
+    		int value_order = data.getOrder();
+        	String order_string =  Integer.toString(value_order);
+    		if (orders.contains(order_string) == true) {
+    			
+    			BookingService.deleteOrder(value_order);
+    			
+    			order.clear();
+        		plate.clear();
+        		check_book.setValue(false);
+        		check_modify.setValue(false);
+        		combo_action.clear();
+        		combo_type.clear();
+        		
+        		notification_booking_delete.open();
+    		} else {
+    			notification_order_wrong.open();
+    		}
+    		
+    	});
+    	
+    	
     }
 
 	public class Obtain_booking_data {
