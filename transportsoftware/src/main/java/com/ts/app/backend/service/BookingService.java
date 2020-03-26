@@ -15,16 +15,18 @@ import java.util.List;
 import com.mysql.jdbc.Statement;
 import com.ts.app.backend.BBDD_Conection;
 import com.ts.app.backend.model.booking;
+import com.ts.app.backend.model.dock;
 import com.ts.app.backend.model.order;
 
 public class BookingService implements CRUD{
 
 	private List<String> orders = new ArrayList<>();
 	private List<booking> bookings = new ArrayList<>();
+	private List<dock> docks = new ArrayList<>();
 	
-	//insertamos pedido nuevo
+	// Inserte a new booking
 	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia, /*LocalDate arrivalDate,*/
-		/*LocalDate departureDate,*/ int state)  {
+		/*LocalDate departureDate,*/ int state, String hour, int dock)  {
 
 		Connection conn = BBDD_Conection.getConexionInstance();
 
@@ -34,7 +36,9 @@ public class BookingService implements CRUD{
 
 	    // the mysql insert statement
 
-	    String query = " INSERT INTO TB_bookings (truckPlate, truckType, order_request, loadDownload, bookingDate, state) VALUES (?, ?, ?, ?, ?, ?)";
+	    String query = " INSERT INTO TB_bookings (truckPlate, truckType, order_request, loadDownload, bookingDate, dock, hour, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	    
+
 	    // create the mysql insert PreparedStatement
     
 	    try {
@@ -45,12 +49,48 @@ public class BookingService implements CRUD{
 			preparedStmt.setInt (3, order_request);
 		    preparedStmt.setInt   (4, loadDownload);
 		    preparedStmt.setDate (5, date);
+		    preparedStmt.setInt   (6, dock);
+		    preparedStmt.setString(7, hour);
 		    //preparedStmt.setInt    (5, arrivalDate);
 		    //preparedStmt.setInt    (5, departureDate);
-		    preparedStmt.setInt    (6, state);
+		    preparedStmt.setInt    (8, state);
 	
 		    // execute the preparedstatement
 		    preparedStmt.execute();
+		    
+		    
+		    //////// ACTUALIZACIÓN TABLA MUELLES
+		    String range = "";
+		    if (hour.equals("06:00")) {
+		    	range = "range_6";
+		    } else if(hour.equals("07:00")) {
+		    	 range = "range_7";
+		    } else if(hour.equals("08:00")) {
+		    	 range = "range_8";
+		    }else if(hour.equals("09:00")) {
+		    	 range = "range_9";
+		    }else if(hour.equals("10:00")) {
+		    	 range = "range_10";
+		    } else if(hour.equals("11:00")) {
+		    	 range = "range_11";
+		    } else if(hour.equals("12:00")) {
+		    	 range = "range_12";
+		    } else if(hour.equals("13:00")) {
+		    	 range = "range_13";
+		    }
+		    
+		    
+		    String query_update = "UPDATE TB_docks SET " + range + " = 3 where id = " + dock + ";";
+		    
+		    try {
+		    	PreparedStatement preparedStmt_update = conn.prepareStatement(query_update);
+		    	preparedStmt_update.execute();
+		    } catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+		    
+		   }
 		    return true;
 	
 		} catch (SQLException e) {
@@ -58,6 +98,8 @@ public class BookingService implements CRUD{
 			e.printStackTrace();
 			return false;
 		}
+	    
+	   
 	}
 
 	//leemos pedido a modificar
@@ -77,6 +119,7 @@ public class BookingService implements CRUD{
 				booking book = new booking();
 				book.setOrder_request(result_booking.getInt("order_request"));
 				book.setTruckPlate(result_booking.getString("truckPlate"));
+				book.setHour(result_booking.getString("hour"));
 				book.setTruckType(result_booking.getInt("truckType"));
 				book.setLoadDownload(result_booking.getInt("loadDownload"));
 				book.setBookingDate(result_booking.getDate("bookingDate").toLocalDate());
@@ -114,6 +157,42 @@ public class BookingService implements CRUD{
 		return orders;
 	}
 
+	public List<dock> read_docks(int truck_type) {
+		ResultSet result_docks = null;
+		Statement state_docks = null;
+		
+		Connection conn = BBDD_Conection.getConexionInstance();
+	
+		
+		try {
+			
+			state_docks = (Statement) conn.createStatement();
+			
+		    String query = "SELECT * FROM DES_TS.TB_docks where truckType = " + truck_type + ";";
+		    
+		        
+		    result_docks = state_docks.executeQuery(query);
+			
+			while (result_docks.next()) {
+				dock dock_data = new dock();
+				dock_data.setId(result_docks.getInt("id"));
+				dock_data.setTruckType(result_docks.getInt("truckType"));
+				dock_data.setRange_6(result_docks.getInt("range_6"));
+				dock_data.setRange_7(result_docks.getInt("range_7"));
+				dock_data.setRange_8(result_docks.getInt("range_8"));
+				dock_data.setRange_9(result_docks.getInt("range_9"));
+				dock_data.setRange_10(result_docks.getInt("range_10"));
+				dock_data.setRange_11(result_docks.getInt("range_11"));
+				dock_data.setRange_12(result_docks.getInt("range_12"));
+				dock_data.setRange_13(result_docks.getInt("range_13"));
+				docks.add(dock_data);
+			} 
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		} 
+		return docks;
+	}
 	
 //@Override
 //public boolean delete() {
@@ -123,7 +202,7 @@ public class BookingService implements CRUD{
 //
 
 	//modificado de pedido
-	public static boolean update(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia) {
+	public static boolean update(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia, String hour, int dock){
 		// TODO Auto-generated method stub
 		Connection conn = BBDD_Conection.getConexionInstance();
 		
@@ -131,10 +210,32 @@ public class BookingService implements CRUD{
 	    //java.sql.Date testDATE = new java.sql.Date(calendar.getTime().getTime());
 	    
 	    Date date = java.sql.Date.valueOf(dia);
-
+	    String old_hour = "";
+	    int old_dock = 0;
+	    int old_loadDownload = 0;
+	    
 	    // the mysql insert statement
-
-	    String query = " UPDATE TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? where order_request = ?";
+	    String query_hour = "SELECT hour, dock, loadDownload FROM TB_bookings where order_request = " + order_request + ";";
+	    
+	    try {
+		    Statement state_hours = (Statement) conn.createStatement();
+		    
+		    ResultSet result_hours = state_hours.executeQuery(query_hour);
+		    
+		    
+		    while (result_hours.next()) {
+				old_hour = result_hours.getString("hour");
+				old_dock = result_hours.getInt("dock");
+				old_loadDownload = result_hours.getInt("loadDownload");
+			} 
+		    
+	    } catch (SQLException e){
+	    	// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+	    }
+	    
+	    String query = " UPDATE TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? , dock = ?, hour = ? where order_request = ?";
 	    // create the mysql insert PreparedStatement
     
 	    try {
@@ -144,14 +245,79 @@ public class BookingService implements CRUD{
 			preparedStmt.setInt (2, truckType);
 		    preparedStmt.setInt   (3, loadDownload);
 		    preparedStmt.setDate (4, date);
+		    preparedStmt.setInt(5, dock);
+		    preparedStmt.setString(6,  hour);
 		    //preparedStmt.setInt    (5, arrivalDate);
 		    //preparedStmt.setInt    (5, departureDate);
-		    preparedStmt.setInt    (5, order_request);
+		    preparedStmt.setInt    (7, order_request);
 	
 		    // execute the preparedstatement
 		    preparedStmt.execute();
+		    
+		    //////// ACTUALIZACIÓN TABLA MUELLES
+		    String range = "";
+		    if (hour.equals("06:00")) {
+		    	range = "range_6";
+		    } else if(hour.equals("07:00")) {
+		    	 range = "range_7";
+		    } else if(hour.equals("08:00")) {
+		    	 range = "range_8";
+		    }else if(hour.equals("09:00")) {
+		    	 range = "range_9";
+		    }else if(hour.equals("10:00")) {
+		    	 range = "range_10";
+		    } else if(hour.equals("11:00")) {
+		    	 range = "range_11";
+		    } else if(hour.equals("12:00")) {
+		    	 range = "range_12";
+		    } else if(hour.equals("13:00")) {
+		    	 range = "range_13";
+		    }
+		    
+		    
+		    String query_update = "UPDATE TB_docks SET " + range + " = 3 where id = " + dock + ";";
+		    
+		    try {
+		    	PreparedStatement preparedStmt_update = conn.prepareStatement(query_update);
+		    	preparedStmt_update.execute();
+		    } catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+		    
+		   }
+		    String old_range = "";
+		    if (old_hour.equals("06:00")) {
+		    	old_range = "range_6";
+		    } else if(old_hour.equals("07:00")) {
+		    	old_range = "range_7";
+		    } else if(old_hour.equals("08:00")) {
+		    	old_range = "range_8";
+		    }else if(old_hour.equals("09:00")) {
+		    	old_range = "range_9";
+		    }else if(old_hour.equals("10:00")) {
+		    	old_range = "range_10";
+		    } else if(old_hour.equals("11:00")) {
+		    	old_range = "range_11";
+		    } else if(old_hour.equals("12:00")) {
+		    	old_range = "range_12";
+		    } else if(old_hour.equals("13:00")) {
+		    	old_range = "range_13";
+		    }
+		    
+		    String query_update_range = "UPDATE TB_docks SET " + old_range + " = " + old_loadDownload + " where id = " + old_dock + ";";
+		    
+		    try {
+		    	PreparedStatement preparedStmt_update_range = conn.prepareStatement(query_update_range);
+		    	preparedStmt_update_range.execute();
+		    } catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+		    
+		   }
 		    return true;
-	
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

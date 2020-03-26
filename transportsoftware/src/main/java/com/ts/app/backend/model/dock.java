@@ -29,6 +29,7 @@ public class dock {
 		this.range_13 = range_13;
 	}
 	
+	public dock() {}
 	
 	public int getId() {
 		return id;

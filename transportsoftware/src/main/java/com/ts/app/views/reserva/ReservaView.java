@@ -3,8 +3,10 @@ package com.ts.app.views.reserva;
 import com.ts.app.backend.Employee;
 import com.ts.app.backend.booking.InsertBookings;
 import com.ts.app.backend.model.booking;
+import com.ts.app.backend.model.dock;
 import com.ts.app.backend.model.order;
 import com.ts.app.backend.service.BookingService;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -27,12 +29,16 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import java.text.DateFormat;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -66,10 +72,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private Button reserve_modify;
 	@Id("cancel")
 	private Button cancel;
-	@Id("date_selection")
-	private DatePicker date_selection;
 	@Id("hour_selection")
-	private TimePicker hour_selection;
+	private ComboBox<String> hour_selection;
 	@Id("check_book")
 	private Checkbox check_book;
 	@Id("check_modify")
@@ -92,6 +96,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private FormItem item_hour;
 	@Id("item_plate")
 	private FormItem item_plate;
+	@Id("check_hours")
+	private Button check_hours;
+	@Id("date_selection")
+	private ComboBox<String> date_selection;
 
     public ReservaView() {
 
@@ -103,7 +111,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	combo_type.setItems("Trailer", "Lona", "Furgoneta");
     	order.setClearButtonVisible(true);
     	plate.setClearButtonVisible(true);
-    	Page reserve_page = new Page(UI.getCurrent());
+    	hour_selection.setReadOnly(true);
     	
     	BookingService bookings = new BookingService();
     	
@@ -120,12 +128,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel.setVisible(false);
     			cancel_booking.setVisible(false);
     			check.setVisible(false);
-    			reserve_page.reload();
     		}
     	});
     	
     	check_modify.addValueChangeListener(e -> {
     		if (check_modify.getValue().equals(true)) {
+    			Icon logoV = new Icon(VaadinIcon.EDIT);
+    			check_hours.setIcon(logoV);
+    			hour_selection.setReadOnly(false);
     			check_book.setValue(false);
     			reserve_modify.setText("Modificar");
     			reserve_modify.setVisible(false);
@@ -150,7 +160,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel_booking.setVisible(false);
     			check.setVisible(false);
     			plate.setReadOnly(false);
-    			reserve_page.reload();
     		}
     	});
     	
@@ -175,20 +184,11 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	notification_order_wrong.setDuration(3000);
     	notification_order_wrong.setPosition(Position.MIDDLE);
     	
-    	LocalDateTime day_reserve = LocalDateTime.now();
-    	date_selection.setMin(day_reserve.toLocalDate());
-
-    	Binder<booking> binder = new Binder<>();
-    	binder.forField(date_selection).withValidator(
-   	        value -> !DayOfWeek.SATURDAY.equals(value.getDayOfWeek()) && !DayOfWeek.SUNDAY.equals(value.getDayOfWeek()),
-    	        "Debes elegir un día entre lunes y viernes").bind(booking::getArrivalDate, booking::setArrivalDate);
-    	
     	cancel.addClickListener(e -> {
     		order.clear();
     		plate.clear();
     		check_book.setValue(false);
     		check_modify.setValue(false);
-    		reserve_page.reload();
     	});
     	
     	Obtain_booking_data data = new Obtain_booking_data();
@@ -199,26 +199,95 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	
     	combo_type.addValueChangeListener(e -> {
     		data.setType(e.getValue());
+    		
     	});
     	
     	plate.addValueChangeListener(e -> {
-    		data.setPlate(plate.getValue());
+    		data.setPlate(e.getValue());
     	});
     	
     	order.addValueChangeListener(e -> {
-    		data.setOrder(order.getValue());
+    		data.setOrder(e.getValue());
     	});
     	
-    	date_selection.addValueChangeListener(e -> {
-    		data.setDay(date_selection.getValue());
+    	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    	Date hoy = new Date();
+    	String j = "";
+    	List<String> p = new ArrayList<>();
+
+    	Calendar c = Calendar.getInstance();
+    	
+    	c.setTime(hoy);
+    	
+        int addedDays = 0;
+        while (addedDays < 5) {
+        	c.add(Calendar.DATE, 1);
+            if (!(c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY|| c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
+                ++addedDays;
+                j = dateFormat.format(c.getTime());
+                p.add(j);
+            }
+        }
+        
+        date_selection.setItems(p);
+        date_selection.addValueChangeListener(e -> {
+        	if (e.getValue() != null) {
+        		String dia = e.getValue();
+	        	LocalDate localDate = LocalDate.parse(dia);
+	        	data.setDay(localDate);
+        	}
+        });
+
+
+        String[] available = {"false","false","false","false","false","false","false","false"};
+		String[] hours = {"06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00"};
+		List<String> hours_available = new ArrayList<>();
+		
+		List<Integer> docks_available = new ArrayList<>();
+		
+    	check_hours.addClickListener(e -> {
+    		List<dock> docks = bookings.read_docks(data.getType());
+    		int num_elements = docks.size();
+
+    		for (int i = 0; i< num_elements; i++) {
+    			
+    			if (docks.get(i).getRange_6() == data.getAction()) { available[0] = "true"; 
+    			docks_available.add(docks.get(i).getId()); 
+    			}
+    			if (docks.get(i).getRange_7() == data.getAction()) { available[1] = "true"; docks_available.add(docks.get(i).getId());}
+    			if (docks.get(i).getRange_8() == data.getAction()) { available[2] = "true"; docks_available.add(docks.get(i).getId()); }
+    			if (docks.get(i).getRange_9() == data.getAction()) { available[3] = "true"; docks_available.add(docks.get(i).getId());}
+    			if (docks.get(i).getRange_10() == data.getAction()) { available[4] = "true"; docks_available.add(docks.get(i).getId());}
+    			if (docks.get(i).getRange_11() == data.getAction()) { available[5] = "true"; docks_available.add(docks.get(i).getId());}
+    			if (docks.get(i).getRange_12() == data.getAction()) { available[6] = "true"; docks_available.add(docks.get(i).getId());}
+    			if (docks.get(i).getRange_13() == data.getAction()) { available[7] = "true"; docks_available.add(docks.get(i).getId());}
+    			
+    		}
+    		
+    		hour_selection.setReadOnly(false);
+    		
+    		for (int i = 0; i<available.length; i++) {
+    			if (available[i] == "true") {
+    				hours_available.add(hours[i]);
+    			}
+    		}
+    		System.out.println(docks_available);
+    		
+    		
+    		hour_selection.setItems(hours_available);
+    		
     	});
     	
-    
+    	hour_selection.addValueChangeListener(e -> {
+        	data.setHour(e.getValue());
+        });
+    	
     	check.addClickListener(e -> {
         	List<String> orders = bookings.read_order();
         	List<booking> books = bookings.read();
     		int value_order = data.getOrder();
         	String order_string =  Integer.toString(value_order);
+        	
     		if (orders.contains(order_string) == true) {
     			
     			reserve_modify.setVisible(true);
@@ -235,10 +304,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			int index = orders.indexOf(order_string);
     			int action = books.get(index).getLoadDownload();
     			int type = books.get(index).getTruckType();
+    			String hour = books.get(index).getHour();
     			LocalDate date = books.get(index).getBookingDate();
-    			
+    			String date_s = date.toString();
     			plate.setValue(books.get(index).getTruckPlate());
-    			date_selection.setValue(date);
+    			hour_selection.setItems(hours_available);
+    			hour_selection.setValue(hour);
+    			
+    			date_selection.setValue(date_s);
     			
     			if (action == 1) {
     				combo_action.setValue("Carga");
@@ -269,16 +342,21 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         	String order_string =  Integer.toString(value_order);
         	int load_download = data.getAction();
         	LocalDate day = data.getDay();
+        	String hour_inicial = data.getHour();
+        	
     		int state = 1;
+    		int dock_chosen = 0;
+    		dock_chosen = docks_available.get(0);
+    		docks_available.remove(0);
     		
-    		if (value_plate != "Invalida" && value_order != 0 && value_type != 0 && day != null && load_download != 0
+    		if (value_plate != "Invalida" && value_order != 0 && value_type != 0 && day != null && load_download != 0 && hour_selection != null
     				 && check_book.getValue().equals(true) || check_modify.getValue().equals(true)){
     			
     			if (check_book.getValue().equals(true)) {
     				
 	    			if (orders.contains(order_string) == true) {
 	    				
-	    				BookingService.create(value_plate, value_type, value_order, load_download, day, state);
+	    				BookingService.create(value_plate, value_type, value_order, load_download, day, state, hour_inicial, dock_chosen);
 	    				
 	    				order.clear();
 	            		plate.clear();
@@ -286,7 +364,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	            		check_modify.setValue(false);
 	            		combo_action.clear();
 	            		combo_type.clear();
-	            		
+	            		hour_selection.clear();
 	            		notification_booking_correct.open();
 
 	    			} else {
@@ -294,7 +372,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    			}
 	    		} else if (check_modify.getValue().equals(true)) {
     				
-    				BookingService.update(value_plate, value_type, value_order, load_download, day);
+    				BookingService.update(value_plate, value_type, value_order, load_download, day, hour_inicial, dock_chosen);
     				
     				order.clear();
             		plate.clear();
@@ -302,6 +380,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
             		check_modify.setValue(false);
             		combo_action.clear();
             		combo_type.clear();
+            		hour_selection.clear();
             		order.setReadOnly(false);
             		item_action.setVisible(false);
         			item_type.setVisible(false);
@@ -317,7 +396,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    			notification_booking_wrong.open();
 	    		}
     		}
-    		reserve_page.reload();
     	});
     	
     	cancel_booking.addClickListener( e -> {
@@ -339,7 +417,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		} else {
     			notification_order_wrong.open();
     		}
-    		reserve_page.reload();
     	});
     }
 
@@ -349,7 +426,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	private String value_plate;
     	private int value_order;
     	private LocalDate day;
+    	private String hour_booking;
     	
+    	public void setHour(String hour) {
+    		hour_booking = hour;
+    	}
+    	
+    	public String getHour() {
+    		return hour_booking;
+    	}
     	public void setAction(String load_download) {
     		if (load_download == "Descarga") {
     			action = 2;

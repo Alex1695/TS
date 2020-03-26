@@ -14,6 +14,7 @@ public class booking {
 	private LocalDate departureDate;
 	private int state;
 	private int truckType;
+	private String hour;
 	
 	public booking(int id, String truckPlate, int order_request, int loadDownload, LocalDate bookingDate, LocalDate arrivalDate,
 			LocalDate departureDate, int state) {
@@ -31,6 +32,14 @@ public class booking {
 	public booking() {}
 	
 	
+
+	public String getHour() {
+		return hour;
+	}
+
+	public void setHour(String hour) {
+		this.hour = hour;
+	}
 
 	public int getTruckType() {
 		return truckType;

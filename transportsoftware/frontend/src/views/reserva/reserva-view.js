@@ -5,13 +5,11 @@ import '@vaadin/vaadin-form-layout/vaadin-form-item.js';
 import '@vaadin/vaadin-button/vaadin-button.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout.js';
-import '@vaadin/vaadin-date-picker/src/vaadin-date-picker.js';
-import '@vaadin/vaadin-time-picker/src/vaadin-time-picker.js';
 import '@vaadin/vaadin-text-field/vaadin-text-field.js';
 import '@vaadin/vaadin-form-layout/src/vaadin-form-item.js';
 import '@vaadin/vaadin-button/src/vaadin-button.js';
-import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
 import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
+import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
 import '@polymer/iron-icon/iron-icon.js';
 
 class ReservaView extends PolymerElement {
@@ -72,11 +70,14 @@ class ReservaView extends PolymerElement {
   </vaadin-form-item>
   <vaadin-form-item style="width: 450px;" id="item_date">
    <label slot="label">Fecha de reserva</label>
-   <vaadin-date-picker style="flex-grow: 0; width: 300px;" id="date_selection"></vaadin-date-picker>
+   <vaadin-combo-box id="date_selection" style="width: 300px;"></vaadin-combo-box>
   </vaadin-form-item>
   <vaadin-form-item id="item_hour">
    <label slot="label">Hora de reserva</label>
-   <vaadin-time-picker id="hour_selection" style="width: 300px;" max="14:00:00.00" min="06:00:00.00" value="06:00"></vaadin-time-picker>
+   <vaadin-combo-box id="hour_selection" style="width: 300px;"></vaadin-combo-box>
+   <vaadin-button theme="icon" aria-label="Add new" id="check_hours">
+    <iron-icon icon="lumo:search"></iron-icon>
+   </vaadin-button>
   </vaadin-form-item>
  </vaadin-form-layout>
  <vaadin-horizontal-layout style="display:flex; flex-wrap:wrap-reverse; width:100%; justify-content: flex-end;">
