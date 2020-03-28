@@ -31,8 +31,6 @@ public class booking {
 	
 	public booking() {}
 	
-	
-
 	public String getHour() {
 		return hour;
 	}

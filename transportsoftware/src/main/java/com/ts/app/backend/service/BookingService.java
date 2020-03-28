@@ -24,23 +24,20 @@ public class BookingService implements CRUD{
 	private List<booking> bookings = new ArrayList<>();
 	private List<dock> docks = new ArrayList<>();
 	
-	// Inserte a new booking
-	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia, /*LocalDate arrivalDate,*/
+	// Insert a new booking
+	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate day_reserved, /*LocalDate arrivalDate,*/
 		/*LocalDate departureDate,*/ int state, String hour, int dock)  {
 
+		// Conection to database
 		Connection conn = BBDD_Conection.getConexionInstance();
 
-		//Calendar calendar = Calendar.getInstance();
-	    //java.sql.Date testDATE = new java.sql.Date(calendar.getTime().getTime());
-	    Date date = java.sql.Date.valueOf(dia);
+		// Transform the format from localdate to date
+	    Date date = java.sql.Date.valueOf(day_reserved);
 
-	    // the mysql insert statement
-
+	    // Write the query to execute
 	    String query = " INSERT INTO TB_bookings (truckPlate, truckType, order_request, loadDownload, bookingDate, dock, hour, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	    
-
-	    // create the mysql insert PreparedStatement
-    
+	    // Create the mysql insert PreparedStatement
 	    try {
 	
 	    	PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -348,6 +345,4 @@ public class BookingService implements CRUD{
 			return false;
 		}
 	}
-
-
 }
