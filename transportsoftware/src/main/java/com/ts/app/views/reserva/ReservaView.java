@@ -506,17 +506,24 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 			// Get the value of the texfield of orders
     		int value_order = data.getOrder();
         	String order_string =  Integer.toString(value_order);
+        	//valores para liberar muelle
+        	String hour="";
+        	hour = data.getHour();
+        	
         	
         	// Get the actual day and the reserved day
-        	LocalDate today_date = LocalDate.now();
-    		LocalDate reserved_day = data.getDay();
-    		Duration duration = Duration.between(today_date, reserved_day);
+//        	LocalDate today_date = LocalDate.now();
+//    		LocalDate reserved_day = data.getDay();
+//    		Duration duration = Duration.between(today_date, reserved_day);
     		
-    		if (duration.toHours() >= 24) {
+    		//if (duration.toHours() >= 24) {
 		    	// If the order is in the database
 				if (orders.contains(order_string) == true) {
+					//liberamos muelle
+					BookingService.updateDockDelete(hour, order_string);
 					// Delete of the booking made
 					BookingService.deleteOrder(value_order);
+					
 					
 					// Behaviour when the delete is done
 					order.clear();
@@ -534,10 +541,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 					// Show notification of wrong order
 					notification_order_wrong.open();
 		    	}
-    		} else {
-    			// Show the notification
-    			notification_booking_cancelation_warning.open();
-    		}
+//    		} else {
+//    			// Show the notification
+//    			notification_booking_cancelation_warning.open();
+//    		}
     	});
     }
 }

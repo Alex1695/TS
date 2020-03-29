@@ -345,4 +345,73 @@ public class BookingService implements CRUD{
 			return false;
 		}
 	}
+	
+	public static void updateDockDelete(String hour, String order_string) {
+		
+		//obtenemos el valor anterior del muelle para modificarlo CARGA/DESCARGA
+		Connection conn2 = BBDD_Conection.getConexionInstance();
+
+	    int old_loadDownload = 0;
+	    // the mysql insert statement
+	    String query_loadDownload = "SELECT loadDownload FROM TB_bookings where order_request = " + order_string + ";";
+	    try {
+		    Statement state_loadDownload = (Statement) conn2.createStatement();
+		    ResultSet result_loadDownload = state_loadDownload.executeQuery(query_loadDownload);
+		    while (result_loadDownload.next()) {
+		    	old_loadDownload = result_loadDownload.getInt("loadDownload");
+			} 
+		    
+	    } catch (SQLException e){
+	    	// TODO Auto-generated catch block
+			e.printStackTrace();
+	    }
+		
+		//obtenemos el muelle a traves del pedido
+		int dock=0;
+		//obtenemos el muelle de BBDD
+		Statement state_orders = null;
+		ResultSet result_orders = null;
+		Connection conn = BBDD_Conection.getConexionInstance();
+		try {
+			state_orders = (Statement) conn.createStatement();
+			result_orders = state_orders.executeQuery("SELECT dock FROM TB_bookings WHERE order_request="+order_string+";");
+			while (result_orders.next()) {
+				dock = result_orders.getInt("dock");
+			} 
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		} 
+		
+		////////ACTUALIZACIÓN TABLA MUELLES
+		String range = "";
+		if (hour.equals("06:00")) {
+		    range = "range_6";
+		} else if(hour.equals("07:00")) {
+		    range = "range_7";
+		} else if(hour.equals("08:00")) {
+		    range = "range_8";
+		}else if(hour.equals("09:00")) {
+		    range = "range_9";
+		}else if(hour.equals("10:00")) {
+		    range = "range_10";
+		} else if(hour.equals("11:00")) {
+		    range = "range_11";
+		} else if(hour.equals("12:00")) {
+		    range = "range_12";
+		} else if(hour.equals("13:00")) {
+		    range = "range_13";
+		}
+		    
+		String query_update = "UPDATE TB_docks SET " + range + " = " + old_loadDownload + " where id = " + dock + ";";
+		    
+		try {
+		    PreparedStatement preparedStmt_update = conn.prepareStatement(query_update);
+		    preparedStmt_update.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();		    
+		}  
+	}
+	
 }
