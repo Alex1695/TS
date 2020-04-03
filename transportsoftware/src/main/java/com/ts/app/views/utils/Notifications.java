@@ -12,7 +12,10 @@ import com.vaadin.flow.server.StreamResource;
 
 public class Notifications {
 
-
+	public static int DEFAULTDURATION = 30000;
+	public static String ERRORCOLOR = "red";
+	public static String SUCCESSCOLOR = "green";
+	
 	/**
 	 * Custom notification to set message, color and time dynamically from java.
 	 * @param message

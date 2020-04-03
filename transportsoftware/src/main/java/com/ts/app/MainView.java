@@ -26,6 +26,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 
 import com.ts.app.views.tft.TFTView;
 import com.ts.app.backend.BBDD_Conection;
+import com.ts.app.views.admin.AdminLoginView;
 import com.ts.app.views.admin.AdminView;
 import com.ts.app.views.reserva.ReservaView;
 import com.ts.app.views.transportsoftware.TransportSoftwareView;
@@ -46,7 +47,8 @@ public class MainView extends AppLayout {
     public MainView() {
     	
     	init();
-			
+    	//AdminLoginView login = new AdminLoginView();//FOR TESTTT
+    	
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, new DrawerToggle());
         menu = createMenuTabs();
