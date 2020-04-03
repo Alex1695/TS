@@ -7,10 +7,11 @@ import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout.js';
 import '@vaadin/vaadin-text-field/vaadin-text-field.js';
 import '@vaadin/vaadin-form-layout/src/vaadin-form-item.js';
-import '@vaadin/vaadin-button/src/vaadin-button.js';
 import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
 import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
+import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
 import '@polymer/iron-icon/iron-icon.js';
+import '@vaadin/vaadin-button/src/vaadin-button.js';
 
 class ReservaView extends PolymerElement {
   static get template() {
@@ -78,6 +79,9 @@ class ReservaView extends PolymerElement {
    <vaadin-button theme="icon" aria-label="Add new" id="check_hours">
     <iron-icon icon="lumo:search"></iron-icon>
    </vaadin-button>
+   <vaadin-button theme="icon" aria-label="Add new" id="check_hours_modify">
+    <iron-icon icon="lumo:edit"></iron-icon>
+   </vaadin-button>
   </vaadin-form-item>
  </vaadin-form-layout>
  <vaadin-horizontal-layout style="display:flex; flex-wrap:wrap-reverse; width:100%; justify-content: flex-end;">
@@ -87,8 +91,14 @@ class ReservaView extends PolymerElement {
   <vaadin-button theme="tertiary" id="cancel" slot="">
     Vaciar selección 
   </vaadin-button>
-  <vaadin-button theme="primary" id="reserve_modify">
-    Save 
+  <vaadin-button theme="primary" id="check_info">
+   Verificar información
+  </vaadin-button>
+ </vaadin-horizontal-layout>
+ <vaadin-horizontal-layout style="width: 100%; justify-content: flex-end;" theme="spacing">
+  <label style="align-self: center;">Si deseas acceder como administrador, pulse en el botón:</label>
+  <vaadin-button theme="icon" aria-label="Add new" id="admin_button">
+   <iron-icon icon="lumo:user"></iron-icon>
   </vaadin-button>
  </vaadin-horizontal-layout>
 </vaadin-vertical-layout>

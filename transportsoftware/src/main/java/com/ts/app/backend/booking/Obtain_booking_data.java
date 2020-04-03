@@ -36,7 +36,7 @@ public class Obtain_booking_data {
 		if (plate.toUpperCase().matches("^[0-9]{4}[A-Z]{3}$")) {
 			value_plate = plate;
 	    }else{
-	    	value_plate = "Invalida";
+	    	value_plate = "";
 	    }  
 	}
 	
