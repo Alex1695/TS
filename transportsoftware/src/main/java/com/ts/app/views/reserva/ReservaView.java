@@ -34,6 +34,7 @@ import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import java.text.DateFormat;
@@ -60,7 +61,9 @@ import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 
-@Route(value = "reserva", layout = MainView.class)
+@Route(value = "reserva" /*, layout = MainView.class*/)
+@RouteAlias(value = "" /*, layout = MainView.class*/)
+
 @PageTitle("Reserva")
 @JsModule("./src/views/reserva/reserva-view.js")
 @Tag("reserva-view")
@@ -676,8 +679,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	});
     	
     	
+    	//Admin Button clicklistener to navigate /login 
     	admin_button.addClickListener(e -> {
-    		
+    		admin_button.getUI().ifPresent(ui ->
+            ui.navigate("login"));
     	});
     }
 }

@@ -27,7 +27,6 @@ import com.ts.app.MainView;
 import com.ts.app.views.tft.TFTView.TFTViewModel;
 
 @Route(value = "tft", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
 @PageTitle("TFT")
 @JsModule("./src/views/tft/t-ft-view.js")
 @Tag("t-ft-view")

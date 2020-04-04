@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -47,7 +48,6 @@ public class MainView extends AppLayout {
     public MainView() {
     	
     	init();
-    	//AdminLoginView login = new AdminLoginView();//FOR TESTTT
     	
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, new DrawerToggle());
@@ -134,4 +134,5 @@ public class MainView extends AppLayout {
             lang_dicc.load(resourceStream);
         }
     }
+    
 }
