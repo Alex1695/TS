@@ -414,4 +414,26 @@ public class BookingService implements CRUD{
 		}  
 	}
 	
+	//funcion para obtener los dias festivos nacionales cargados en BBDD
+	public static ArrayList<String> holidaysDays(){
+		ArrayList<String> holidays = new ArrayList<String>();
+		Statement state_holidays = null;
+		ResultSet result_holidays = null;
+		Connection conn = BBDD_Conection.getConexionInstance();
+		String queryHolidays = "SELECT * FROM DES_TS.TB_holidays;";
+		try {
+			state_holidays = (Statement) conn.createStatement();
+			result_holidays = state_holidays.executeQuery(queryHolidays);
+			while (result_holidays.next()) {
+				String day = result_holidays.getString("date");
+				holidays.add(day);
+			} 
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return holidays;
+	}
 }

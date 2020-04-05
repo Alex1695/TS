@@ -290,6 +290,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	// Variable to control the amount of days we add
         int addedDays = 0;
         
+        //holidays
+        ArrayList<String> holidays = new ArrayList<String>();
+        holidays = BookingService.holidaysDays();
+        
         // Adding days to the available days
         while (addedDays < 5) {
         	// Adding a new day to the date
@@ -304,6 +308,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
                 
                 // Add the day into the list
                 days_available.add(dates_string);
+                int aux1=0;
+                aux1=days_available.size();
+                days_available.removeAll(holidays);
+                int aux2=0;
+                aux2=days_available.size();
+                if(aux1 != aux2) {
+                	--addedDays;
+                }
             }
         }
         
