@@ -154,6 +154,28 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+	        <resource>
+	            <directory>${project.basedir}/src/main/resources</directory>
+	            <filtering>true</filtering>
+	            <includes>
+	                <include>*.xml</include>
+	                <include>*.config</include>
+	                <include>*.properties</include>
+	                <include>*.js</include>
+	                <include>*.jpg</include>
+	            </includes>
+	        </resource>
+	        <resource>
+	            <directory>${project.basedir}/src/main/resources/dictionaries</directory>
+	            <filtering>true</filtering>
+	            <includes>
+	                <include>*.xml</include>
+	                <include>*.config</include>
+	                <include>*.properties</include>
+	            </includes>
+	        </resource>
+    	</resources>
     </build>
 
     <profiles>

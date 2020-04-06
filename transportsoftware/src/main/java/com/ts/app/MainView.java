@@ -11,6 +11,7 @@ import java.util.Properties;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -19,6 +20,8 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
@@ -31,19 +34,25 @@ import com.ts.app.views.admin.AdminLoginView;
 import com.ts.app.views.admin.AdminView;
 import com.ts.app.views.reserva.ReservaView;
 import com.ts.app.views.transportsoftware.TransportSoftwareView;
+import com.ts.app.views.utils.DictionaryManager;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
 @JsModule("./styles/shared-styles.js")
+@Route("main")
 @PWA(name = "TransportSoftware", shortName = "TransportSoftware")
 @Theme(value = Lumo.class, variant = Lumo.LIGHT)
 public class MainView extends AppLayout {
 
-    private final Tabs menu;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final Tabs menu;
     Connection conexion;
     //Language diccionary
-    Properties lang_dicc;
+    //Properties lang_dicc;
 
     public MainView() {
     	
@@ -53,6 +62,7 @@ public class MainView extends AppLayout {
         addToNavbar(true, new DrawerToggle());
         menu = createMenuTabs();
         addToDrawer(menu);
+        
     }
 
     private static Tabs createMenuTabs() {
@@ -68,7 +78,7 @@ public class MainView extends AppLayout {
         final List<Tab> tabs = new ArrayList<>();
         tabs.add(createTab("TFT", TFTView.class));
         tabs.add(createTab("Admin", AdminView.class));
-        tabs.add(createTab("Reserva", ReservaView.class));
+       // tabs.add(createTab("Reserva", ReservaView.class));
         tabs.add(createTab("TransportSoftware", TransportSoftwareView.class));
         return tabs.toArray(new Tab[tabs.size()]);
     }
@@ -93,6 +103,8 @@ public class MainView extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         selectTab();
+        //UI.getCurrent().navigate("tft");
+        menu.setSelectedIndex(0);
     }
 
     private void selectTab() {
@@ -115,24 +127,17 @@ public class MainView extends AppLayout {
     		e.printStackTrace();
     	}
     	
-//    	//cargamos el diccionario de la app
-//    	try {
-//			app_language("lang_ES");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//		}
+    	//cargamos el diccionario de la app
+    	try {
+			DictionaryManager.setLanguage("lang_ES");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     	
-    /**
-     * Method to load selected laguage diccionary from src/main/resources
-     */
-    private void app_language(String lang) throws IOException {
-        //Importante agregar el resource directorie en el .pom
-        lang_dicc = new Properties();
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        try(InputStream resourceStream = loader.getResourceAsStream(lang+".properties")) {
-            lang_dicc.load(resourceStream);
-        }
-    }
+    
+    
+    
     
 }

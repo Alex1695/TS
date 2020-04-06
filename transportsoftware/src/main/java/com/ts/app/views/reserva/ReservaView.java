@@ -1,69 +1,44 @@
 package com.ts.app.views.reserva;
 
-import com.ts.app.backend.Employee;
-import com.ts.app.backend.booking.InsertBookings;
 import com.ts.app.backend.booking.Obtain_booking_data;
 import com.ts.app.backend.model.booking;
 import com.ts.app.backend.model.dock;
-import com.ts.app.backend.model.order;
 import com.ts.app.backend.service.BookingService;
-import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.timepicker.TimePicker;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
+import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import com.helger.commons.string.StringParser;
-import com.ts.app.MainView;
 import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
+import com.ts.app.views.utils.DictionaryManager;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.dom.Element;
-import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 
 @Route(value = "reserva" /*, layout = MainView.class*/)
 @RouteAlias(value = "" /*, layout = MainView.class*/)
-
 @PageTitle("Reserva")
 @JsModule("./src/views/reserva/reserva-view.js")
 @Tag("reserva-view")
@@ -73,7 +48,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     // You can find the design file in /frontend/src/views/src/views/reserva/reserva-view.js
     // The design can be easily edited by using Vaadin Designer (vaadin.com/designer)
 
-    public static interface ReservaViewModel extends TemplateModel {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static interface ReservaViewModel extends TemplateModel {
 
     }
 
@@ -124,8 +104,11 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 
     public ReservaView() {
     	
+    	init();
+
     	check_spanish.setValue(true);
     	check_english.setValue(false);
+
     	check.setVisible(false);
     	check_info.setVisible(false);
     	cancel.setVisible(false);
@@ -738,4 +721,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		}
     	});
     }
+
+	private void init() {
+		//cargamos el diccionario de la app
+    	try {
+			DictionaryManager.setLanguage("lang_ES");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
 }

@@ -6,11 +6,17 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import java.io.UnsupportedEncodingException;
+
+import com.ts.app.MainView;
+import com.ts.app.views.utils.DictionaryManager;
 import com.ts.app.views.utils.Notifications;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
@@ -28,13 +34,14 @@ public class AdminLoginView extends FlexLayout {
 	
 	/**
 	 * Default contructor of LoginOverlay
+	 * @throws UnsupportedEncodingException 
 	 */
-	public AdminLoginView(){
+	public AdminLoginView() throws UnsupportedEncodingException{
 		
 		//LoginForm component = new LoginForm();
 		component = new LoginOverlay();
 		component.setTitle("SGM - DHL");
-		component.setDescription("Acceso al panel de administración");
+		component.setDescription(DictionaryManager.translateField("adminlogin.description"));
 		LoginI18n i18n = LoginI18n.createDefault();
 		i18n.setAdditionalInformation("Default credentials: admin / admin");
 		component.setI18n(i18n);
@@ -77,8 +84,9 @@ public class AdminLoginView extends FlexLayout {
 	 * Method to navigate to Main view
 	 */
 	private void navigateToMainPage(LoginEvent event) {
+		
 		this.getUI().ifPresent(ui ->
-         ui.navigate("admin"));
+         ui.navigate("main"));
 	}
 	
 	@Override
@@ -92,5 +100,6 @@ public class AdminLoginView extends FlexLayout {
 		super.onDetach(detachEvent);
 		component.setOpened(false);
 	}
+	
 	
 }
