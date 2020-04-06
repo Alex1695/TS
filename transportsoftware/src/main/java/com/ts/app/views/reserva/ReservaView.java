@@ -117,9 +117,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private Button check_hours_modify;
 	@Id("check_info")
 	private Button check_info;
+	@Id("check_spanish")
+	private Checkbox check_spanish;
+	@Id("check_english")
+	private Checkbox check_english;
 
     public ReservaView() {
     	
+    	check_spanish.setValue(true);
+    	check_english.setValue(false);
     	check.setVisible(false);
     	check_info.setVisible(false);
     	cancel.setVisible(false);
@@ -242,6 +248,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	Notification notification_booking_cancelation_warning = new Notification(booking_cancelation_warning);
     	notification_booking_cancelation_warning.setDuration(3000);
     	notification_booking_cancelation_warning.setPosition(Position.MIDDLE);
+    	
+    	// Creation of the notification when the orders is already used for a booking
+    	Label booking_used_order_warning = new Label("No se puede realizar la reserva. Ya se ha realizado una reserva con ese pedido!");
+    	Notification notification_used_order_warning = new Notification(booking_used_order_warning);
+    	notification_used_order_warning.setDuration(3000);
+    	notification_used_order_warning.setPosition(Position.MIDDLE);
     	
     	// Behaviour when the cancel button is clicked
     	cancel.addClickListener(e -> {
@@ -532,12 +544,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		});
     	});
     	
-    	
     	// Behaviour when the button reserve or modify is clicked
     	reserve_modify.addClickListener( e -> {
     		// We get the data of the orders
         	List<String> orders = bookings.read_order();
-
+        	List<String> orders_booked = bookings.orders_booked();
+        	
         	// We get the data of the textfields and comboboxes
         	String value_plate = data.getPlate().toUpperCase();
         	int value_type = data.getType();
@@ -550,40 +562,46 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		int state = 1;
     		int dock_chosen = 0;
     		
-    		// We get the first dock available and delete it from the array
-    		dock_chosen = docks_available.get(0);
-    		docks_available.remove(0);
+  
     		
     		// If all the form items are filled
     		if (value_plate != "" && value_order != 0 && value_type != 0 && day != null && load_download != 0 && hour_selection != null
     				 && check_book.getValue().equals(true) || check_modify.getValue().equals(true)){
     			
+    			
     			// If the checkbox of making a booking is selected
     			if (check_book.getValue().equals(true)) {
     				
-    				// If the order is in the database
-	    			if (orders.contains(order_string) == true) {
-	    				
-	    				// Create the new booking
-	    				BookingService.create(value_plate, value_type, value_order, load_download, day, state, hour_inicial, dock_chosen);
-	    				
-	    				// Behaviour when the booking is created
-	    				order.clear();
-	            		plate.clear();
-	            		check_book.setValue(false);
-	            		check_modify.setValue(false);
-	            		combo_action.clear();
-	            		combo_type.clear();
-	            		hour_selection.clear();
-	            		date_selection.clear();
-	            		
-	            		// Show notification of correct booking
-	            		notification_booking_correct.open();
-
-	    			} else {
-	    				// Show notification of wrong order
-	    				notification_order_wrong.open();
-	    			}
+    				if (orders_booked.contains(order_string) == false) {
+    			
+	    				// If the order is in the database
+		    			if (orders.contains(order_string) == true) {
+		    					
+		    				// We get the first dock available and delete it from the array
+		    	    		dock_chosen = docks_available.get(0);
+		    	    		docks_available.remove(0);
+		    	    		
+		    				// Create the new booking
+		    				BookingService.create(value_plate, value_type, value_order, load_download, day, state, hour_inicial, dock_chosen);
+		    				
+		    				// Behaviour when the booking is created
+		    				order.clear();
+		            		plate.clear();
+		            		check_book.setValue(false);
+		            		check_modify.setValue(false);
+		            		combo_action.clear();
+		            		combo_type.clear();
+		            		hour_selection.clear();
+		            		date_selection.clear();
+		            		
+		            		// Show notification of correct booking
+		            		notification_booking_correct.open();
+	    				} else {
+	    					notification_order_wrong.open();
+	    				}
+    				} else {
+    					notification_used_order_warning.open();
+		    	}
 	    		
 	    		// If the checkbox of modify is selected
 	    		} else if (check_modify.getValue().equals(true)) {
@@ -690,11 +708,34 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		}
     	});
     	
-    	
     	//Admin Button clicklistener to navigate /login 
     	admin_button.addClickListener(e -> {
     		admin_button.getUI().ifPresent(ui ->
             ui.navigate("login"));
+    	});
+    	
+    	// Selection of spanish
+    	check_spanish.addClickListener(e -> {
+    		// Behaviuor when spanish is selected
+    		if (check_spanish.getValue().equals(true)) {
+    			check_english.setValue(false);
+    		}
+    		
+    		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
+    			check_spanish.setValue(true);
+    		}
+    	});
+    	
+    	// Selection of english
+    	check_english.addClickListener(e -> {
+    		// Behaviuor when english is selected
+    		if (check_english.getValue().equals(true)) {
+    			check_spanish.setValue(false);
+    		}
+    		
+    		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
+    			check_english.setValue(true);
+    		}
     	});
     }
 }

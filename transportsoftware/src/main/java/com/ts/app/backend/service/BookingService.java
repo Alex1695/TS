@@ -23,6 +23,7 @@ public class BookingService implements CRUD{
 	private List<String> orders = new ArrayList<>();
 	private List<booking> bookings = new ArrayList<>();
 	private List<dock> docks = new ArrayList<>();
+	private List<String> orders_booked = new ArrayList<>();
 	
 	// Insert a new booking
 	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate day_reserved, /*LocalDate arrivalDate,*/
@@ -126,6 +127,31 @@ public class BookingService implements CRUD{
 			System.out.println(e); 
 		} 
 		return bookings;
+	}
+	
+	// Read orders from table bookings
+	public List<String> orders_booked() {
+		// TODO Auto-generated method stub
+		Statement state_booking = null;
+		ResultSet result_booking = null;
+		
+		Connection conn = BBDD_Conection.getConexionInstance();
+		
+		try {
+			state_booking = (Statement) conn.createStatement();
+			result_booking = state_booking.executeQuery("SELECT order_request FROM DES_TS.TB_bookings");
+			
+			while (result_booking.next()) {
+				String order_data = "";
+				int aux = 0;
+				aux = result_booking.getInt("order_request");
+				order_data = Integer.toString(aux);
+				orders_booked.add(order_data);
+			}
+		} catch(Exception e) {
+			System.out.println(e); 
+		} 
+		return orders_booked;
 	}
 	
 	//leemos pedidos

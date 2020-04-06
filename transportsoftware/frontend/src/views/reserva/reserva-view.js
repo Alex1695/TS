@@ -9,9 +9,9 @@ import '@vaadin/vaadin-text-field/vaadin-text-field.js';
 import '@vaadin/vaadin-form-layout/src/vaadin-form-item.js';
 import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
 import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
-import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@vaadin/vaadin-button/src/vaadin-button.js';
+import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
 
 class ReservaView extends PolymerElement {
   static get template() {
@@ -37,6 +37,15 @@ class ReservaView extends PolymerElement {
         </style>
 </custom-style>
 <vaadin-vertical-layout id="wrapper" theme="padding">
+ <vaadin-horizontal-layout theme="spacing" style="align-self: flex-end;">
+  <label>Seleccione un idioma: </label>
+  <vaadin-checkbox id="check_spanish">
+   Español
+  </vaadin-checkbox>
+  <vaadin-checkbox id="check_english">
+   Inglés
+  </vaadin-checkbox>
+ </vaadin-horizontal-layout>
  <h1>Reservar un muelle</h1>
  <vaadin-form-layout style="align-self: center;">
   <vaadin-form-item style="width: 100%;">
@@ -92,7 +101,7 @@ class ReservaView extends PolymerElement {
     Vaciar selección 
   </vaadin-button>
   <vaadin-button theme="primary" id="check_info">
-   Verificar información
+    Verificar información 
   </vaadin-button>
  </vaadin-horizontal-layout>
  <vaadin-horizontal-layout style="width: 100%; justify-content: flex-end;" theme="spacing">
