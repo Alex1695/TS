@@ -221,7 +221,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	notification_order_wrong.setPosition(Position.MIDDLE);
     	
     	// Creation of the notification when there is missing data for the hours
-    	Label missing_data_hours = new Label("Faltan el dato del tipo de camión o de si es carga/descarga!");
+    	Label missing_data_hours = new Label("Faltan el dato del tipo de camión, si es carga/descarga o la matrícula!");
     	Notification notification_missing_data_hours = new Notification(missing_data_hours);
     	notification_missing_data_hours.setDuration(3000);
     	notification_missing_data_hours.setPosition(Position.MIDDLE);
@@ -336,20 +336,23 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		
 		// When the button is clicked
     	check_hours.addClickListener(e -> {
+
     		// Get the data of the type and the action
     		int value_type = data.getType();
     		int load_download = data.getAction();
+    		String plate = data.getPlate();
     		
     		// Delete all the items
     		hours_available.removeAll(hours_available);
     		
     		// If the data is missing
-    		if (value_type == 0 || load_download == 0) {
+    		if (value_type == 0 || load_download == 0 || plate.equals("")) {
     			// Show notification of missing data
     			notification_missing_data_hours.open();
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
+	    		List<String> hours_searched = bookings.read_hours(plate);
 	    		
 	    		// Get the numbers of docks
 	    		int num_elements = docks.size();
@@ -376,28 +379,39 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    				hours_available.add(hours[i]);
 	    			}
 	    		}
-	    		
-	    		// Set the items of the combobox
+
+	    		for (int i = 0; i<hours_available.size(); i++) {
+	    			for (int j = 0; j<hours_searched.size();j++) {
+	    				if (hours_available.get(i).equals(hours_searched.get(j))) {
+		    				hours_available.remove(i);
+		    			}
+	    			}
+	    			
+	    		}
 	    		hour_selection.setItems(hours_available);
+	    		
     		}
     	});
     	
     	// When the button is clicked
     	check_hours_modify.addClickListener(e -> {
+
     		// Get the data of the type and the action
     		int value_type = data.getType();
     		int load_download = data.getAction();
+    		String plate = data.getPlate();
     		
-    		// Detele all the items
+    		// Delete all the items
     		hours_available.removeAll(hours_available);
     		
     		// If the data is missing
-    		if (value_type == 0 || load_download == 0) {
+    		if (value_type == 0 || load_download == 0 || plate.equals("")) {
     			// Show notification of missing data
     			notification_missing_data_hours.open();
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
+	    		List<String> hours_searched = bookings.read_hours(plate);
 	    		
 	    		// Get the numbers of docks
 	    		int num_elements = docks.size();
@@ -424,8 +438,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    				hours_available.add(hours[i]);
 	    			}
 	    		}
-	    		
-	    		// Set the items of the combobox
+
+	    		for (int i = 0; i<hours_available.size(); i++) {
+	    			for (int j = 0; j<hours_searched.size();j++) {
+	    				if (hours_available.get(i).equals(hours_searched.get(j))) {
+		    				hours_available.remove(i);
+		    			}
+	    			}
+	    			
+	    		}
 	    		hour_selection.setItems(hours_available);
     		}
     	});

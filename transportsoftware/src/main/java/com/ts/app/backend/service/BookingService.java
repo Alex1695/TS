@@ -24,6 +24,7 @@ public class BookingService implements CRUD{
 	private List<booking> bookings = new ArrayList<>();
 	private List<dock> docks = new ArrayList<>();
 	private List<String> orders_booked = new ArrayList<>();
+	private List<String> hours_truck = new ArrayList<>();
 	
 	// Insert a new booking
 	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate day_reserved, /*LocalDate arrivalDate,*/
@@ -127,6 +128,35 @@ public class BookingService implements CRUD{
 			System.out.println(e); 
 		} 
 		return bookings;
+	}
+	
+	public List<String> read_hours(String plate) {
+		// TODO Auto-generated method stub
+		Statement state_booking = null;
+		ResultSet result_booking = null;
+		
+		Connection conn = BBDD_Conection.getConexionInstance();
+		
+		String query = "SELECT hour FROM DES_TS.TB_bookings where truckPlate = '" + plate + "';";
+		
+		try {
+			
+		  
+		   
+		    PreparedStatement preparedStmt = conn.prepareStatement(query);
+		    //preparedStmt.setString (1, plate);
+	    	result_booking = preparedStmt.executeQuery(query);
+		    
+		
+			while (result_booking.next()) {
+				String hour_data = "";
+				hour_data = result_booking.getString("hour");
+				hours_truck.add(hour_data);
+			}
+		} catch(Exception e) {
+			System.out.println(e); 
+		} 
+		return hours_truck;
 	}
 	
 	// Read orders from table bookings
