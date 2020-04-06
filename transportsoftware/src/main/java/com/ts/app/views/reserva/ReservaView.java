@@ -735,10 +735,22 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		// Behaviuor when english is selected
     		if (check_english.getValue().equals(true)) {
     			check_spanish.setValue(false);
+    			try {
+					DictionaryManager.setLanguage("lang_EN");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		
     		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
     			check_english.setValue(true);
+    			try {
+					DictionaryManager.setLanguage("lang_ES");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     	});
     }
