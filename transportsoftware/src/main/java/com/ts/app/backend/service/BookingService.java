@@ -194,12 +194,12 @@ public class BookingService implements CRUD{
 		
 		try {
 			state_orders = (Statement) conn.createStatement();
-			result_orders = state_orders.executeQuery("SELECT * FROM DES_TS.TB_orders");
+			result_orders = state_orders.executeQuery("SELECT id FROM DES_TS.TB_orders");
 			
 			while (result_orders.next()) {
 				String order_data = "";
 				int aux = 0;
-				aux = result_orders.getInt("order_request");
+				aux = result_orders.getInt("id");
 				order_data = Integer.toString(aux);
 				orders.add(order_data);
 			} 
@@ -288,11 +288,12 @@ public class BookingService implements CRUD{
 			return false;
 	    }
 	    
-	    String query = " UPDATE DES_TS.TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? , dock = ?, hour = ? where order_request = ?";
+	    //String query = " UPDATE DES_TS.TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? , dock = ?, hour = ? where order_request = ?";
 	    // create the mysql insert PreparedStatement
-    
+
 	    try {
-	
+	    	String query = " UPDATE DES_TS.TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? , dock = ?, hour = ? WHERE order_request = ?";
+
 	    	PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setString (1, truckPlate);
 			preparedStmt.setInt (2, truckType);
@@ -306,7 +307,11 @@ public class BookingService implements CRUD{
 	
 		    // execute the preparedstatement
 		    preparedStmt.execute();
-		    
+	    }catch (SQLException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+		    System.out.println(e);
+		   }
 		    //////// ACTUALIZACIÓN TABLA MUELLES
 		    String range = "";
 		    if (hour.equals("06:00")) {
@@ -371,11 +376,11 @@ public class BookingService implements CRUD{
 		   }
 		    return true;
 
-		} catch (SQLException e) {
+		/*} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
-		}
+		}*/
 	}
 	
 	//borrado de pedido
