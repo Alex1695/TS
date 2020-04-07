@@ -1,9 +1,11 @@
 package com.ts.app.views.reserva;
 
 import com.ts.app.backend.booking.Obtain_booking_data;
+import com.ts.app.backend.controller.CsvReader;
 import com.ts.app.backend.model.booking;
 import com.ts.app.backend.model.dock;
 import com.ts.app.backend.service.BookingService;
+import com.ts.app.backend.service.DockService;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -774,6 +776,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		//cargamos el diccionario de la app
     	try {
 			DictionaryManager.setLanguage("lang_ES");
+			//CsvReader.readCsv();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
