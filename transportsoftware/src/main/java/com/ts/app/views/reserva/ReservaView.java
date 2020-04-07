@@ -589,6 +589,9 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		if (value_plate != "" && value_order != 0 && value_type != 0 && day != null && load_download != 0 && hour_selection != null
     				 && check_book.getValue().equals(true) || check_modify.getValue().equals(true)){
     			
+    			 //We get the first dock available and delete it from the array
+	    		dock_chosen = docks_available.get(0);
+	    		docks_available.remove(0);
     			
     			// If the checkbox of making a booking is selected
     			if (check_book.getValue().equals(true)) {
@@ -597,11 +600,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			
 	    				// If the order is in the database
 		    			if (orders.contains(order_string) == true) {
-		    					
-		    				// We get the first dock available and delete it from the array
-		    	    		dock_chosen = docks_available.get(0);
-		    	    		docks_available.remove(0);
-		    	    		
 		    				// Create the new booking
 		    				BookingService.create(value_plate, value_type, value_order, load_download, day, state, hour_inicial, dock_chosen);
 		    				
