@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -42,6 +43,7 @@ import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 @PageTitle("Reserva")
 @JsModule("./src/views/reserva/reserva-view.js")
 @Tag("reserva-view")
+@CssImport("./styles/reservas-styles.css")
 public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 
     // This is the Java companion file of a design
@@ -52,9 +54,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private final String CLASS_NAME = "reservas-styles";
+	
 	public static interface ReservaViewModel extends TemplateModel {
-
+		
     }
 
 	@Id("order")
@@ -105,7 +108,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     public ReservaView() {
     	
     	init();
-
     	check_spanish.setValue(true);
     	check_english.setValue(false);
 
@@ -169,6 +171,9 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			item_plate.setVisible(false);
     			item_date.setVisible(false);
     			item_hour.setVisible(false);
+//    			item_date.addClassName("hide");
+//    			item_hour.addClassName("hide");
+    			
     			
     		}
     		
