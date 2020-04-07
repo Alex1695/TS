@@ -11,7 +11,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import java.io.InputStream;
+
+import com.helger.commons.csv.CSVReader;
 import com.ts.app.MainView;
+import com.ts.app.backend.controller.CsvReader;
+import com.ts.app.backend.service.StateService;
 import com.ts.app.views.admin.AdminView.AdminViewModel;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.upload.Upload;
@@ -49,21 +53,21 @@ public class AdminView extends PolymerTemplate<AdminViewModel> implements
 	MemoryBuffer memoryBuffer;
 
     public AdminView() {
-    	
+    	StateService service = new StateService();//for test -> remove
     	MemoryBuffer memoryBuffer = new MemoryBuffer();
     	
 
     	Upload uploaderDocks = new Upload(memoryBuffer);
     	uploaderDocks.addFinishedListener(e -> {
     	    InputStream inputStream = memoryBuffer.getInputStream();
-    	    //CSVReader.readCsv(inputStream);
+    	    CsvReader.loadDocks(inputStream);
     	    
     	});
     	
     	Upload uploaderOrders = new Upload(memoryBuffer);
     	uploaderOrders.addFinishedListener(e -> {
     	    InputStream inputStream = memoryBuffer.getInputStream();
-    	    //CSVReader.readCsv(inputStream);
+    	    CsvReader.loadOrders(inputStream);
     	});
        
     	

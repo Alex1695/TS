@@ -776,7 +776,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		//cargamos el diccionario de la app
     	try {
 			DictionaryManager.setLanguage("lang_ES");
-			//CsvReader.readCsv();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

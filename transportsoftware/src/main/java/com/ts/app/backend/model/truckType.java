@@ -2,48 +2,31 @@ package com.ts.app.backend.model;
 
 public class truckType {
 	
-	private int id;
-	private String truckType;
-	private int load;
-	private int download;
+	enum type{
+		Lona,
+		Furgoneta,
+		Trailer
+	}
 	
-	public truckType(int id, String truckType, int load, int download) {
-		super();
-		this.id = id;
-		this.truckType = truckType;
-		this.load = load;
-		this.download = download;
+	public truckType() {
+		
 	}
-
-	public int getId() {
-		return id;
+	
+	public static int Furgoneta = 1;
+	public static int Lona = 2;
+	public static int Trailer =  3;
+	
+	
+	public static int getId(String str) {
+		
+	    if(str.equals(type.Lona.toString())) {
+	    	return Lona;
+	    }else if(str.equals(type.Furgoneta.toString())) {
+	    	return Furgoneta;
+	    }else if(str.equals(type.Trailer.toString())) {
+	    	return Trailer;
+	    }
+	    return 0;
 	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getTruckType() {
-		return truckType;
-	}
-
-	public void setTruckType(String truckType) {
-		this.truckType = truckType;
-	}
-
-	public int getLoad() {
-		return load;
-	}
-
-	public void setLoad(int load) {
-		this.load = load;
-	}
-
-	public int getDownload() {
-		return download;
-	}
-
-	public void setDownload(int download) {
-		this.download = download;
-	}
+	
 }
