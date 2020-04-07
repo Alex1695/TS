@@ -465,7 +465,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		
     		// Order in string format
         	String order_string =  Integer.toString(value_order);
-        	
         	// If the order is in the database
     		if (orders.contains(order_string) == true) {
     			
@@ -482,34 +481,46 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			check_hours.setVisible(false);
     			check_hours_modify.setVisible(true);
     			
-    			// We get the data of the order 
-    			int index = orders.indexOf(order_string);
-    			int action = books.get(index).getLoadDownload();
-    			int type = books.get(index).getTruckType();
-    			String hour = books.get(index).getHour();
-    			LocalDate date = books.get(index).getBookingDate();
-    			String date_s = date.toString();
-    			plate.setValue(books.get(index).getTruckPlate());
-    			
-    			// We set the data into the combobox and the textfields
-    			hour_selection.setItems(hours_available);
-    			hour_selection.setValue(hour);
-    			date_selection.setValue(date_s);
-    			
-    			if (action == 1) {
-    				combo_action.setValue("Carga");
-    			} else if (action == 2) {
-    				combo_action.setValue("Descarga");
+    			// We get the data of the order
+    			for (booking element: books) {
+    				// We get the order from the books made
+    				int order_searched = element.getOrder_request();
+    				String order_searched_s = Integer.toString(order_searched);
+    				
+    				// If the order search and an order from the bookings made are the same
+    				if (order_searched_s.equals(order_string)) {
+    					// Get the index of the elements
+    					int index = books.indexOf(element);
+    					
+    					// Get the data me need
+    					int action = books.get(index).getLoadDownload();
+    	    			int type = books.get(index).getTruckType();
+    	    			String hour = books.get(index).getHour();
+    	    			LocalDate date = books.get(index).getBookingDate();
+    	    			String date_s = date.toString();
+    	    			String plate_s = books.get(index).getTruckPlate();
+    	    			
+    	    			// We set the data into the combobox and the textfields
+    	    			plate.setValue(plate_s);
+    	    			hour_selection.setItems(hours_available);
+    	    			hour_selection.setValue(hour);
+    	    			date_selection.setValue(date_s);
+    	    			
+    	    			if (action == 1) {
+    	    				combo_action.setValue("Carga");
+    	    			} else if (action == 2) {
+    	    				combo_action.setValue("Descarga");
+    	    			}
+    	    			
+    	    			if (type == 1) {
+    	    				combo_type.setValue("Furgoneta");
+    	    			} else if (type == 2) {
+    	    				combo_type.setValue("Lona");
+    	    			} else if (type == 3) {
+    	    				combo_type.setValue("Trailer");
+    	    			}
+    				}
     			}
-    			
-    			if (type == 1) {
-    				combo_type.setValue("Furgoneta");
-    			} else if (type == 2) {
-    				combo_type.setValue("Lona");
-    			} else if (type == 3) {
-    				combo_type.setValue("Trailer");
-    			}
-    			
     		} else {
 				notification_order_wrong.open();
 			}
@@ -565,8 +576,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         	
     		int state = 1;
     		int dock_chosen = 0;
-    		
-  
+    	
     		
     		// If all the form items are filled
     		if (value_plate != "" && value_order != 0 && value_type != 0 && day != null && load_download != 0 && hour_selection != null
@@ -600,6 +610,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		            		
 		            		// Show notification of correct booking
 		            		notification_booking_correct.open();
+		            		
 	    				} else {
 	    					notification_order_wrong.open();
 	    				}
@@ -631,7 +642,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         			// Show notification of correct modification
             		booking_correct.setText("Modificación realizada");
             		notification_booking_correct.open();
-            		
     			} else {
     				// Show notification of booking incorrect
 	    			notification_booking_wrong.open();

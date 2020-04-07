@@ -288,7 +288,7 @@ public class BookingService implements CRUD{
 			return false;
 	    }
 	    
-	    String query = " UPDATE TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? , dock = ?, hour = ? where order_request = ?";
+	    String query = " UPDATE DES_TS.TB_bookings set truckPlate = ?, truckType = ?, loadDownload = ?, bookingDate = ? , dock = ?, hour = ? where order_request = ?";
 	    // create the mysql insert PreparedStatement
     
 	    try {
