@@ -25,6 +25,7 @@ public class BookingService implements CRUD{
 	private List<dock> docks = new ArrayList<>();
 	private List<String> orders_booked = new ArrayList<>();
 	private List<String> hours_truck = new ArrayList<>();
+	private List<booking> book_plate = new ArrayList<>();
 	
 	// Insert a new booking
 	public static boolean create(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate day_reserved, /*LocalDate arrivalDate,*/
@@ -209,7 +210,338 @@ public class BookingService implements CRUD{
 		} 
 		return orders;
 	}
+	
+	//buscamos reserva de matricula
+	public List<booking> search_plate(String plate, String hour, String hour_selected) {
+		ResultSet result_orders = null;
 
+		Connection conn = BBDD_Conection.getConexionInstance();
+		
+		try {
+			
+			// seleccionamos todos los elementos de la reserva que coincidan con la matricula y hora de reserva en la tabla bookings
+			String query = "SELECT * FROM DES_TS.TB_bookings WHERE truckPlate = ? and hour = ?";
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setString (1, plate);
+			preparedStmt.setString (2, hour_selected);
+
+			result_orders = preparedStmt.executeQuery();
+			
+			while (result_orders.next()) {
+				booking book = new booking();
+				book.setOrder_request(result_orders.getInt("order_request"));
+				book.setTruckPlate(result_orders.getString("truckPlate"));
+				book.setDock(result_orders.getInt("dock"));
+				book.setHour(result_orders.getString("hour"));
+				book.setLoadDownload(result_orders.getInt("loadDownload"));
+				book.setTruckType(result_orders.getInt("truckType"));
+				book.setBookingDate(result_orders.getDate("bookingDate").toLocalDate());
+				book_plate.add(book);
+				
+			} 
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		} 
+		
+		try {
+			
+			// actualizamos el valor de la hora de llegada de la reserva que coincida con la matricula y la hora de reserva
+			String query2 = " UPDATE DES_TS.TB_bookings set arrivalDate = ? WHERE truckPlate = ? and hour = ?";
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query2);
+			preparedStmt.setString (1, hour);
+			preparedStmt.setString (2, plate);
+			preparedStmt.setString (3, hour_selected);
+
+			preparedStmt.execute();
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		}
+		
+		return book_plate;
+	}
+
+	//borramos la reserva cuando llega tarde a la entrada
+	public void delete_booking (String plate, String hour) {
+		
+		ResultSet result_orders3 = null;
+		
+		booking book = new booking();
+		
+		String hora = "";
+		int old = 0;
+		int dock = 0;
+		
+		Connection conn = BBDD_Conection.getConexionInstance();
+		
+		try {
+			
+			// actualizamos el valor del estado de la reserva que coincida con la matricula y la hora de reserva
+			String query3 = " UPDATE DES_TS.TB_bookings set state = ? WHERE truckPlate = ? and hour = ?";
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query3);
+			preparedStmt.setInt(1, 2);
+			preparedStmt.setString(2, plate);
+			preparedStmt.setString (3, hour);
+
+			preparedStmt.execute();
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		}
+		
+		try {
+			
+			// seleccionamos todos los elementos de la reserva que coincidan con la matricula y hora de reserva en la tabla bookings
+			String query6 = "SELECT * FROM DES_TS.TB_bookings WHERE truckPlate = ? and hour = ?";
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query6);
+			preparedStmt.setString(1, plate);
+			preparedStmt.setString (2, hour);
+
+
+			result_orders3 = preparedStmt.executeQuery();
+			
+			while (result_orders3.next()) {
+				book.setTruckType(result_orders3.getInt("truckType"));
+				book.setOrder_request(result_orders3.getInt("order_request"));
+				book.setTruckPlate(result_orders3.getString("truckPlate"));
+				book.setDock(result_orders3.getInt("dock"));
+				book.setHour(result_orders3.getString("hour"));
+				book.setLoadDownload(result_orders3.getInt("loadDownload"));
+				book.setBookingDate(result_orders3.getDate("bookingDate").toLocalDate());
+				book.setArrivalDate(result_orders3.getString("arrivalDate"));
+				book.setDepartureDate(result_orders3.getString("departureDate"));
+				book.setState(result_orders3.getInt("state"));
+				dock = result_orders3.getInt("dock");
+				hora = result_orders3.getString("hour");
+				old = result_orders3.getInt("loadDownload");
+			}
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		}
+		
+		try {
+	    	
+			// insertamos en la tabla timeOut (que contiene las reservas canceladas por retrasos) la reserva seleccionada anteriormente
+	    	String query5 = " INSERT INTO DES_TS.TB_timeOut (truckPlate, order_request, loadDownload, bookingDate, arrivalDate, departureDate, state) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		   	
+	    	PreparedStatement preparedStmt = conn.prepareStatement(query5);
+			preparedStmt.setString(1, book.getTruckPlate());
+			preparedStmt.setInt(2, book.getOrder_request());
+			preparedStmt.setInt(3, book.getLoadDownload());
+			preparedStmt.setString(4, book.getBookingDate().toString());
+			preparedStmt.setString(5, "");
+			preparedStmt.setString(6, "");
+			preparedStmt.setInt(7, book.getState());
+	
+		    // execute the preparedstatement
+		    preparedStmt.execute();
+	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		////////ACTUALIZACIÓN TABLA MUELLES
+		String range = "";
+		if (hora.equals("06:00")) {
+		    range = "range_6";
+		} else if(hora.equals("07:00")) {
+		    range = "range_7";
+		} else if(hora.equals("08:00")) {
+		    range = "range_8";
+		}else if(hora.equals("09:00")) {
+		    range = "range_9";
+		}else if(hora.equals("10:00")) {
+		    range = "range_10";
+		} else if(hora.equals("11:00")) {
+		    range = "range_11";
+		} else if(hora.equals("12:00")) {
+		    range = "range_12";
+		} else if(hora.equals("13:00")) {
+		    range = "range_13";
+		}
+		
+		// actualizamos el estado del muelle a la hora de la reserva seleccionada
+		String query_update = "UPDATE TB_docks SET " + range + " = " + old + " where id = " + dock + ";";
+		    
+		try {
+		    PreparedStatement preparedStmt_update = conn.prepareStatement(query_update);
+		    preparedStmt_update.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();		    
+		}
+		
+	    try {
+	    	
+	    	// eliminamos de la tabla de bookings (que contiene las reservas) la reserva que coincida con la matricula y la hora de reserva
+	    	String query4 = " DELETE FROM DES_TS.TB_bookings WHERE truckPlate = ? and hour = ?";
+	
+	    	PreparedStatement preparedStmt = conn.prepareStatement(query4);
+			preparedStmt.setString(1, plate);
+			preparedStmt.setString (2, hour);
+
+	
+		    // execute the preparedstatement
+		    preparedStmt.execute();
+	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+		
+		
+	//buscamos reserva de la matricula que ya se ha realizado
+	public void book_done (String plate, int state, String hour, String hour_selected) {
+		ResultSet result_orders3 = null;
+		
+		booking book = new booking();
+
+		String hora = "";
+		int old = 0;
+		int dock = 0;
+		int type = 0;
+		String hour_s = "";
+		Connection conn = BBDD_Conection.getConexionInstance();
+
+		try {
+			
+			// actualizamos el valor del estado y la hora de salida de la reserva que coincida con la matricula y la hora de reserva
+			String query3 = " UPDATE DES_TS.TB_bookings set state = ?, departureDate = ? WHERE truckPlate = ? and hour = ?";
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query3);
+			preparedStmt.setInt(1, state);
+			preparedStmt.setString(2, hour);
+			preparedStmt.setString(3, plate);
+			preparedStmt.setString(4, hour_selected);
+
+			preparedStmt.execute();
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		}
+		
+		try {
+			
+			// seleccionamos todos los elementos de la reserva que coincidan con la matricula y hora de reserva en la tabla bookings
+			String query6 = "SELECT * FROM DES_TS.TB_bookings WHERE truckPlate = ? and hour = ?";
+			
+			PreparedStatement preparedStmt = conn.prepareStatement(query6);
+			preparedStmt.setString(1, plate);
+			preparedStmt.setString(2, hour_selected);
+
+			result_orders3 = preparedStmt.executeQuery();
+			
+			while (result_orders3.next()) {
+				book.setTruckType(result_orders3.getInt("truckType"));
+				book.setOrder_request(result_orders3.getInt("order_request"));
+				book.setTruckPlate(result_orders3.getString("truckPlate"));
+				book.setDock(result_orders3.getInt("dock"));
+				book.setHour(result_orders3.getString("hour"));
+				book.setLoadDownload(result_orders3.getInt("loadDownload"));
+				book.setBookingDate(result_orders3.getDate("bookingDate").toLocalDate());
+				book.setArrivalDate(result_orders3.getString("arrivalDate"));
+				book.setDepartureDate(result_orders3.getString("departureDate"));
+				book.setState(result_orders3.getInt("state"));
+				type = result_orders3.getInt("truckType");
+				dock = result_orders3.getInt("dock");
+				hora = result_orders3.getString("hour");
+				old = result_orders3.getInt("loadDownload");	
+				hour_s = result_orders3.getDate("bookingDate").toString();
+			}
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		}
+		
+		try {
+	    	
+			// insertamos en la tabla bookings_done (que contiene los pedidos completados) la reserva seleccionada anteriormente
+	    	String query5 = " INSERT INTO DES_TS.TB_bookings_done (truckPlate, truckType, order_request, loadDownload, bookingDate, dock, hour_reserved, houre_entered, hour_exit, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		   	
+	    	PreparedStatement preparedStmt = conn.prepareStatement(query5);
+			preparedStmt.setString(1, plate);
+			preparedStmt.setInt(2, type);
+			preparedStmt.setInt(3, book.getOrder_request());
+			preparedStmt.setInt(4, book.getLoadDownload());
+			preparedStmt.setString(5, hour_s);
+			preparedStmt.setInt(6, book.getDock());
+			preparedStmt.setString(7, book.getHour());
+			preparedStmt.setString(8, book.getArrivalDate());
+			preparedStmt.setString(9, book.getDepartureDate());
+			preparedStmt.setInt(10, book.getState());
+	
+		    // execute the preparedstatement
+		    preparedStmt.execute();
+	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    
+		
+		////////ACTUALIZACIÓN TABLA MUELLES
+		String range = "";
+		if (hora.equals("06:00")) {
+		    range = "range_6";
+		} else if(hora.equals("07:00")) {
+		    range = "range_7";
+		} else if(hora.equals("08:00")) {
+		    range = "range_8";
+		}else if(hora.equals("09:00")) {
+		    range = "range_9";
+		}else if(hora.equals("10:00")) {
+		    range = "range_10";
+		} else if(hora.equals("11:00")) {
+		    range = "range_11";
+		} else if(hora.equals("12:00")) {
+		    range = "range_12";
+		} else if(hora.equals("13:00")) {
+		    range = "range_13";
+		}
+		
+		// actualizamos el estado del muelle a la hora de la reserva seleccionada
+		String query_update = "UPDATE TB_docks SET " + range + " = " + old + " where id = " + dock + ";";
+		
+		try {
+		    PreparedStatement preparedStmt_update = conn.prepareStatement(query_update);
+
+		    preparedStmt_update.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();		    
+		}
+		
+		
+	    try {
+	    	
+	    	// eliminamos de la tabla de bookings (que contiene las reservas) la reserva que coincida con la matricula y la hora de reserva
+	    	String query4 = " DELETE FROM DES_TS.TB_bookings WHERE truckPlate = ? and hour = ?";
+	
+	    	PreparedStatement preparedStmt = conn.prepareStatement(query4);
+			preparedStmt.setString(1, plate);
+			preparedStmt.setString(2, hour_selected);
+	
+		    // execute the preparedstatement
+		    preparedStmt.execute();
+	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	}
+
+
+
+	//obtener los datos del muelle
 	public List<dock> read_docks(int truck_type) {
 		ResultSet result_docks = null;
 		Statement state_docks = null;

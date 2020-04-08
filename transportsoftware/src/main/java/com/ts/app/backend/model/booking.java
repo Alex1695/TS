@@ -10,14 +10,15 @@ public class booking {
 	private int order_request;
 	private int loadDownload;
 	private LocalDate bookingDate;
-	private LocalDate arrivalDate;
-	private LocalDate departureDate;
+	private String arrivalDate;
+	private String departureDate;
 	private int state;
 	private int truckType;
 	private String hour;
+	private int dock;
 	
-	public booking(int id, String truckPlate, int order_request, int loadDownload, LocalDate bookingDate, LocalDate arrivalDate,
-			LocalDate departureDate, int state) {
+	public booking(int id, String truckPlate, int order_request, int loadDownload, LocalDate bookingDate, String arrivalDate,
+			String departureDate, int state) {
 		super();
 		this.id = id;
 		this.truckPlate = truckPlate;
@@ -31,6 +32,14 @@ public class booking {
 	
 	public booking() {}
 	
+	public int getDock() {
+		return dock;
+	}
+
+	public void setDock(int dock) {
+		this.dock = dock;
+	}
+
 	public String getHour() {
 		return hour;
 	}
@@ -87,19 +96,19 @@ public class booking {
 		this.bookingDate = bookingDate;
 	}
 
-	public LocalDate getArrivalDate() {
+	public String getArrivalDate() {
 		return arrivalDate;
 	}
 
-	public void setArrivalDate(LocalDate arrivalDate) {
+	public void setArrivalDate(String arrivalDate) {
 		this.arrivalDate = arrivalDate;
 	}
 
-	public LocalDate getDepartureDate() {
+	public String getDepartureDate() {
 		return departureDate;
 	}
 
-	public void setDepartureDate(LocalDate departureDate) {
+	public void setDepartureDate(String departureDate) {
 		this.departureDate = departureDate;
 	}
 

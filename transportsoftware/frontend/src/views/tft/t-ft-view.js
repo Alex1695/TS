@@ -1,14 +1,20 @@
 import {PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-
 import '@vaadin/vaadin-board/vaadin-board.js';
 import '@vaadin/vaadin-charts/vaadin-chart.js';
 import '@vaadin/vaadin-lumo-styles/all-imports.js';
+import '@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js';
+import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
+import '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
+import '@vaadin/vaadin-grid/src/vaadin-grid.js';
+import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@vaadin/vaadin-button/src/vaadin-button.js';
 
 class TFTView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles lumo-badge lumo-typography">
+<style include="shared-styles lumo-badge lumo-typography">
         :host {
           background-color: var(--lumo-contrast-10pct);
           box-sizing: border-box;
@@ -24,13 +30,13 @@ class TFTView extends PolymerElement {
           max-width: 1024px;
         }
 
-        /* Wrapper */
+        / Wrapper /
         .wrapper {
           display: flex;
           padding: var(--lumo-space-s);
         }
 
-        /* Card */
+        / Card /
         .card {
           align-items: baseline;
           background-color: var(--lumo-base-color);
@@ -53,12 +59,12 @@ class TFTView extends PolymerElement {
           margin-top: var(--lumo-space-m);
         }
 
-        /* Spacing */
+        / Spacing /
         .space-m {
           padding: var(--lumo-space-m);
         }
 
-        /* Text colors */
+        / Text colors /
         .error-text {
           color: var(--lumo-error-text-color);
         }
@@ -75,67 +81,44 @@ class TFTView extends PolymerElement {
           color: var(--lumo-success-text-color);
         }
 
-        /* Charts */
+        / Charts /
         vaadin-chart {
           padding-top: var(--lumo-space-s);
         }
 
-        /* Grid */
+        / Grid /
         vaadin-grid {
           height: 300px;
         }
       </style>
-
-      <vaadin-board>
-        <vaadin-board-row>
-          <div class="wrapper">
-            <div class="card space-m">
-              <span theme="badge">Users</span>
-              <h2 class="primary-text">[[currentUsers]]</h2>
-              <span class="secondary-text">Current users in the app</span>
-            </div>
-          </div>
-          <div class="wrapper">
-            <div class="card space-m">
-              <span theme="badge success">Events</span>
-              <h2 class="success-text">[[numEvents]]</h2>
-              <span class="secondary-text">Events from the views</span>
-            </div>
-          </div>
-          <div class="wrapper">
-            <div class="card space-m">
-              <span theme="badge error">Conversion</span>
-              <h2 class="error-text">[[conversionRate]]%</h2>
-              <span class="secondary-text">User conversion rate</span>
-            </div>
-          </div>
-        </vaadin-board-row>
-        <div class="wrapper">
-          <div class="card">
-            <vaadin-chart
-              type="column"
-              id="monthlyVisitors"
-              title="Monthly visitors per city">
-            </vaadin-chart>
-          </div>
-        </div>
-        <vaadin-board-row>
-          <div class="wrapper">
-            <div class="card">
-              <h3>Service health</h3>
-              <vaadin-grid id="grid" theme="no-border"></vaadin-grid>
-            </div>
-          </div>
-          <div class="wrapper">
-            <div class="card">
-              <vaadin-chart
-                id="responseTimes"
-                title="Response times">
-              </vaadin-chart>
-            </div>
-          </div>
-        </vaadin-board-row>
-    `;
+<vaadin-vertical-layout style="width: 100%; height: 100%;">
+ <vaadin-horizontal-layout theme="spacing" style="align-self: center;">
+  <vaadin-horizontal-layout theme="spacing" id="entrada">
+   <vaadin-text-field label="Introduce una matricula" placeholder="" id="text_entrance" style="align-self: center;"></vaadin-text-field>
+   <vaadin-combo-box id="combo_hours" style="align-self: flex-end;" label="Selecciona la hora de reserva"></vaadin-combo-box>
+   <vaadin-button theme="icon" aria-label="Add new" id="search_button" style="align-self: flex-end;">
+    <iron-icon icon="lumo:search"></iron-icon>
+   </vaadin-button>
+   <vaadin-text-field label="Introduce la hora de entrada" placeholder="Formato XX:XX" id="text_hour_entrance"></vaadin-text-field>
+   <vaadin-button theme="primary" id="button_entrance" style="align-self: flex-end;">
+     Entrar 
+   </vaadin-button>
+  </vaadin-horizontal-layout>
+  <vaadin-horizontal-layout theme="spacing" id="salida">
+   <vaadin-text-field label="Introduce una matricula" id="text_exit"></vaadin-text-field>
+   <vaadin-button theme="primary" id="button_exit" style="align-self: flex-end;">
+     Salir 
+   </vaadin-button>
+  </vaadin-horizontal-layout>
+ </vaadin-horizontal-layout>
+ <vaadin-horizontal-layout theme="spacing" style="align-self: center;">
+  <h2>Camiones en Muelles</h2>
+ </vaadin-horizontal-layout>
+ <vaadin-horizontal-layout theme="spacing" style="align-self: center; justify-content: center;">
+  <vaadin-grid id="grid_trucks" style="align-self: center;"></vaadin-grid>
+ </vaadin-horizontal-layout>
+</vaadin-vertical-layout>
+`;
   }
 
   static get is() {

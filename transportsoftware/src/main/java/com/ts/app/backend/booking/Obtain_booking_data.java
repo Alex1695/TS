@@ -1,6 +1,9 @@
 package com.ts.app.backend.booking;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.ts.app.backend.model.booking;
 
 public class Obtain_booking_data {
 	private int action;
@@ -10,8 +13,38 @@ public class Obtain_booking_data {
 	private LocalDate day;
 	private String hour_booking;
 	
+	public List<booking> books;
+	
+	public List<booking> getBooks(){
+		return books;
+	}
+	
+	public void setBooks(List<booking> books){
+		this.books = books;
+	}
+	
+	private String arrival_hour;
+	private String exit_hour;
+	
+	
+	public String getArrival_hour() {
+		return arrival_hour;
+	}
+
+	public void setArrival_hour(String arrival_hour) {
+		this.arrival_hour = arrival_hour;
+	}
+
+	public String getExit_hour() {
+		return exit_hour;
+	}
+
+	public void setExit_hour(String exit_hour) {
+		this.exit_hour = exit_hour;
+	}
+	
 	public void setHour(String hour) {
-		hour_booking = hour;
+		this.hour_booking = hour;
 	}
 	
 	public String getHour() {

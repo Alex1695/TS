@@ -1,7 +1,11 @@
 package com.ts.app.views.tft;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.vaadin.flow.component.Tag;
@@ -13,8 +17,13 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -24,14 +33,19 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import com.ts.app.MainView;
+import com.ts.app.backend.booking.Obtain_booking_data;
+import com.ts.app.backend.model.booking;
+import com.ts.app.backend.service.BookingService;
 import com.ts.app.views.tft.TFTView.TFTViewModel;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 
 @Route(value = "tft", layout = MainView.class)
 @PageTitle("TFT")
 @JsModule("./src/views/tft/t-ft-view.js")
 @Tag("t-ft-view")
-public class TFTView extends PolymerTemplate<TFTViewModel> implements
-        AfterNavigationObserver {
+public class TFTView extends PolymerTemplate<TFTViewModel> {
 
     // This is the Java companion file of a design
     // You can find the design file in /frontend/src/views/src/views/tft/t-ft-view.js
@@ -43,92 +57,355 @@ public class TFTView extends PolymerTemplate<TFTViewModel> implements
      */
     public static interface TFTViewModel extends TemplateModel {
 
-        public void setCurrentUsers(int currentUsers);
-
-        public void setNumEvents(String events);
-
-        public void setConversionRate(int conversionRate);
-
     }
 
-    @Id
-    private Grid<HealthGridItem> grid;
+    // elementos de la aplicacion
+	@Id("grid_trucks")
+	private Grid <booking> grid_trucks;
 
-    @Id
-    private Chart monthlyVisitors;
-    @Id
-    private Chart responseTimes;
+	@Id("text_entrance")
+	private TextField text_entrance;
 
+	@Id("button_entrance")
+	private Button button_entrance;
+
+	@Id("text_exit")
+	private TextField text_exit;
+
+	@Id("button_exit")
+	private Button button_exit;
+	
+	@Id("text_hour_entrance")
+	private TextField text_hour_entrance;
+
+	@Id("search_button")
+	private Button search_button;
+
+	@Id("combo_hours")
+	private ComboBox<String> combo_hours;
+
+	// comienzo de la estructura de la aplicacion
     public TFTView() {
-        TemplateRenderer<HealthGridItem> template = TemplateRenderer
-                .<HealthGridItem>of("<span theme$=\"[[item.theme]]\">[[item.status]]</span>")
-                .withProperty("theme", HealthGridItem::getTheme).withProperty("status", HealthGridItem::getStatus);
+    	
+    	BookingService bookings = new BookingService();
+    	Obtain_booking_data data = new Obtain_booking_data();
+    	
+    	// notificaciones en pantalla 
+    	
+    	// Creation of the notification when the plate is incorrect
+    	Label plate_wrong = new Label("Matricula incorrecta");
+    	Notification notification_plate_wrong = new Notification(plate_wrong);
+    	notification_plate_wrong.setDuration(3000);
+    	notification_plate_wrong.setPosition(Position.MIDDLE);
+    	
+    	// Creation of the notification when there is not plate
+    	Label not_plate = new Label("Asegurate de haber introducido todos los campos.");
+    	Notification notification_plate_not = new Notification(not_plate);
+    	notification_plate_not.setDuration(3000);
+    	notification_plate_not.setPosition(Position.MIDDLE);
+    	
+    	// Creation of the notification when a plate is in the booking
+    	Label plate_enter = new Label("El camión ha entrado en el muelle");
+    	Notification notification_plate_enter = new Notification(plate_enter);
+    	notification_plate_enter.setDuration(3000);
+    	notification_plate_enter.setPosition(Position.MIDDLE);
+    	
+    	// Creation of the notification when a booking is done
+    	Label plate_exit = new Label("El camión ha salido del muelle");
+    	Notification notification_plate_exit = new Notification(plate_exit);
+    	notification_plate_exit.setDuration(3000);
+    	notification_plate_exit.setPosition(Position.MIDDLE);
+	
+    	// Creation of the notification when a booking is null
+    	Label plate_null = new Label("La matrícula no se encuentra en la lista");
+    	Notification notification_plate_null = new Notification(plate_null);
+    	notification_plate_null.setDuration(3000);
+    	notification_plate_null.setPosition(Position.MIDDLE);
+    	
+    	// Creation of the notification when a booking is late
+    	Label booking_late = new Label("Han pasado los diez minutos de cortesía desde la reserva por lo que fue eliminada.");
+    	Notification notification_booking_late = new Notification(booking_late);
+    	notification_booking_late.setDuration(3000);
+    	notification_booking_late.setPosition(Position.MIDDLE);
+    	
+    	// estructura de la tabla de la pantalla    	
+    	grid_trucks.addColumn(booking::getOrder_request).setHeader("Order").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getTruckPlate).setHeader("Plate").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getDock).setHeader("Dock").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getHour).setHeader("Hour").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getLoadDownload).setHeader("Action").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getTruckType).setHeader("Type").setAutoWidth(true);
+		
+		grid_trucks.setWidth("800px");
+		grid_trucks.setHeight("300px");
+		grid_trucks.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
+		grid_trucks.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+		
+		// variables para coger las matriculas y las horas
+		text_entrance.addValueChangeListener(e -> { data.setPlate(e.getValue()); });
+		text_exit.addValueChangeListener(e -> { data.setPlate(e.getValue()); });
+		text_hour_entrance.addValueChangeListener(e -> { data.setArrival_hour(e.getValue()); });
+		combo_hours.addValueChangeListener(e -> {data.setHour(e.getValue()); });
+		
+		// comienzo de la funcion del boton de entrada
+    	button_entrance.addClickListener(e -> {
+    		
+    		String value_plate = text_entrance.getValue().toUpperCase();
+    		
+    		String entrance_hour = text_hour_entrance.getValue();
 
-        grid.addColumn(HealthGridItem::getCity).setHeader("City");
-        grid.addColumn(template).setFlexGrow(0).setWidth("100px").setHeader("Status");
-        grid.addColumn(HealthGridItem::getItemDate).setHeader("Date").setWidth("140px");
-    }
+    		String hour_selected = data.getHour();
+  
+    		
+    		if (value_plate.equals("")) {    		
+    			notification_plate_not.open();
+    		}
+    		
+    		else if (entrance_hour.equals("")) {
+    			notification_plate_not.open();
+    		}
+    		
+    		else if (hour_selected == null) {
+    			notification_plate_not.open();
+    		}
+    		
+    		else {		
+    			data.setPlate(value_plate);
+    				
+    			if(data.getPlate() == "") {
+    				
+    				notification_plate_wrong.open();
+    			}
+    			
+    			else {
+    					
+    				if(hour_selected == "") {
+    					notification_plate_null.open();
+    				}
+    					
+    				else {
+    				
+	    				SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+						Date d = null;
+						try {
+							d = df.parse(hour_selected);
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} 
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(d);
+						cal.add(Calendar.MINUTE, 10);
+						
+						SimpleDateFormat df2 = new SimpleDateFormat("HH:mm");
+						Date d2 = null;
+						try {
+							d2 = df2.parse(entrance_hour);
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} 
+						Calendar cal2 = Calendar.getInstance();
+						cal2.setTime(d2);
+						
+						
+						long inicio = cal.getTimeInMillis();
+						long actual = cal2.getTimeInMillis();
+	
+						if ((actual > inicio))
+						{
+							notification_booking_late.open();
+							bookings.delete_booking(value_plate, hour_selected);
+						}
+						else
+						{
+		    				List<booking> books = bookings.search_plate(value_plate, entrance_hour, hour_selected);
+		    				data.setBooks(books);
+		    				grid_trucks.setItems(books);
+		    				notification_plate_enter.open();
+						}
+    				}
+    			}	
+			}
+    			
+    		text_entrance.clear();
+    		text_hour_entrance.clear();
+    		combo_hours.clear();
+    		
+    		search_button.setEnabled(true);
+    		
+    	});
+    	
+    	// comienzo de la funcion del boton de salida
+    	button_exit.addClickListener(e -> {
+    		
+    		String value_plate2 = data.getPlate().toUpperCase();
+    		String hour_selected = "";
+    		String truck_plate = "";
+    		String newTime = "";
+    		int index = 0;
+    		List<booking> books = data.getBooks();
+    		
+    		if (value_plate2.equals("")) {    
+    			
+    			notification_plate_not.open();
+    		}
+    		
+    		else {
+    			
+    			//data.setPlate(value_plate2);
+    			
+    			if(data.getPlate() == "") {
+    				
+    				notification_plate_wrong.open();
+    			}
+    			
+    			else {	
+    				//for(booking element : books) {
+    				for (int i = 0; i<books.size(); i++) {	
+    					truck_plate = books.get(i).getTruckPlate();
 
-    @Override
-    public void afterNavigation(AfterNavigationEvent event) {
+    					if(truck_plate.contains(value_plate2) == false) {
+    						notification_plate_null.open();			
+    					} else if (truck_plate.contains(value_plate2) == true){
+    						
+    				
+    						hour_selected = books.get(i).getHour();
+    						int type = books.get(i).getTruckType();
+    						int loadDownload = books.get(i).getLoadDownload();
+    						String hour = books.get(i).getHour();
+    						
+    						
+    						// 1. furgoneta, carga = 20m, descarga = 15m
+    						if (type == 1) {
+    							if (loadDownload == 1) {
+    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+    								Date d = null;
+									try {
+										d = df.parse(hour);
+									} catch (ParseException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+										
+									} 
+    	    						Calendar cal = Calendar.getInstance();
+    	    						cal.setTime(d);
+    	    						cal.add(Calendar.MINUTE, 20);
+    	    						newTime = df.format(cal.getTime());
+    							}
+    							else {
+    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+    								Date d = null;
+									try {
+										d = df.parse(hour);
+									} catch (ParseException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} 
+    	    						Calendar cal = Calendar.getInstance();
+    	    						cal.setTime(d);
+    	    						cal.add(Calendar.MINUTE, 15);
+    	    						newTime = df.format(cal.getTime());
+    							}
+    						}
+    						
+    						// 2. lona, carga = 40m, descarga = 30m
+    						else if (type == 2) {
+    							if (loadDownload == 1) {
+    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+    								Date d = null;
+									try {
+										d = df.parse(hour);
+									} catch (ParseException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} 
+    	    						Calendar cal = Calendar.getInstance();
+    	    						cal.setTime(d);
+    	    						cal.add(Calendar.MINUTE, 40);
+    	    						newTime = df.format(cal.getTime());
+    							}
+    							else {
+    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+    	    						Date d = null;
+									try {
+										d = df.parse(hour);
+									} catch (ParseException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} 
+    	    						Calendar cal = Calendar.getInstance();
+    	    						cal.setTime(d);
+    	    						cal.add(Calendar.MINUTE, 30);
+    	    						newTime = df.format(cal.getTime());
+    							}
+    						}
+    						
+    						// 3. trailer, carga = 60m, descarga = 45m
+    						else if (type == 3) {
+    							if (loadDownload == 1) {
+    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+    								Date d = null;
+									try {
+										d = df.parse(hour);
+									} catch (ParseException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} 
+    	    						Calendar cal = Calendar.getInstance();
+    	    						cal.setTime(d);
+    	    						cal.add(Calendar.MINUTE, 60);
+    	    						newTime = df.format(cal.getTime());
+    							}
+    							else {
+    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+    								Date d = null;
+									try {
+										d = df.parse(hour);
+									} catch (ParseException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} 
+    	    						Calendar cal = Calendar.getInstance();
+    	    						cal.setTime(d);
+    	    						cal.add(Calendar.MINUTE, 45);
+    	    						newTime = df.format(cal.getTime());
+    							}
+    						}
+    						bookings.book_done(value_plate2, 0, newTime, hour_selected);
+    						
+    						books.remove(i);
+    						data.setBooks(books);
+    						
+    						grid_trucks.setItems(books);
+    					}
+    				}
+    			}
+    			notification_plate_exit.open();
+    			text_exit.clear();
+    		}
+    	});
+    	
+    	search_button.setDisableOnClick(true);
+    	
+    	// comienzo de la funcion del boton de busqueda de las horas de reserva
+    	search_button.addClickListener(e -> {
+    		
+    		List<booking> books = bookings.read();
+    		List<String> hours = new ArrayList<>();
+    		String value_plate = text_entrance.getValue().toUpperCase();
 
-        // Set some data when this view is displayed.
+    		hours.removeAll(hours);
+	
+    		for (booking element : books) {
+    			if (element.getTruckPlate().contains(value_plate) == true) {
+	
+    				hours.add(element.getHour());
+    			}
+    		}
 
-        // Top row widgets
-        getModel().setCurrentUsers(745);
-        getModel().setNumEvents("54.6k"); // TODO client-side formatting
-        getModel().setConversionRate(18);
-
-        // First chart
-        Configuration configuration = monthlyVisitors.getConfiguration();
-        configuration.addSeries(new ListSeries("Tokyo", 49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4,
-                194.1, 95.6, 54.4));
-        configuration.addSeries(
-                new ListSeries("New York", 83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3));
-        configuration.addSeries(
-                new ListSeries("London", 48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2));
-        configuration.addSeries(
-                new ListSeries("Berlin", 42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1));
-
-        XAxis x = new XAxis();
-        x.setCrosshair(new Crosshair());
-        x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-        configuration.addxAxis(x);
-
-        YAxis y = new YAxis();
-        y.setMin(0);
-        configuration.addyAxis(y);
-
-        // Grid
-        List<HealthGridItem> gridItems = new ArrayList<>();
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "M\u00FCnster", "Germany", "Good", "badge"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Cluj-Napoca", "Romania", "Good", "badge"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Ciudad Victoria", "Mexico", "Good", "badge"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Ebetsu", "Japan", "Excellent", "badge success"));
-        gridItems
-                .add(new HealthGridItem(LocalDate.of(2019, 1, 14), "S\u00E3o Bernardo do Campo", "Brazil", "Good", "badge"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Maputo", "Mozambique", "Good", "badge"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Warsaw", "Poland", "Good", "badge"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Kasugai", "Japan", "Failing", "badge error"));
-        gridItems.add(new HealthGridItem(LocalDate.of(2019, 1, 14), "Lancaster", "United States", "Excellent",
-                "badge success"));
-
-        grid.setItems(gridItems);
-
-        // Second chart
-        configuration = responseTimes.getConfiguration();
-        configuration
-                .addSeries(new ListSeries("Tokyo", 7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6));
-        configuration
-                .addSeries(new ListSeries("London", 3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8));
-
-        x = new XAxis();
-        x.setCrosshair(new Crosshair());
-        x.setCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-        configuration.addxAxis(x);
-
-        y = new YAxis();
-        y.setMin(0);
-        configuration.addyAxis(y);
+    		combo_hours.setItems(hours);
+    		
+    	});  	
     }
 }
