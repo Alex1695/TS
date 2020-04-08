@@ -36,14 +36,14 @@ class ReservaView extends PolymerElement {
           }
         </style>
 </custom-style>
-<vaadin-vertical-layout id="wrapper" theme="padding">
+<vaadin-vertical-layout id="wrapper" theme="padding" style="align-items: stretch;">
  <vaadin-horizontal-layout theme="spacing" style="align-self: flex-end;">
   <label>Seleccione un idioma: </label>
   <vaadin-checkbox id="check_spanish">
-   Español
+    Español 
   </vaadin-checkbox>
   <vaadin-checkbox id="check_english">
-   Inglés
+    Inglés 
   </vaadin-checkbox>
  </vaadin-horizontal-layout>
  <h1>Reservar un muelle</h1>
@@ -60,31 +60,31 @@ class ReservaView extends PolymerElement {
   <br>
   <vaadin-form-item style="width: 450px;">
    <label slot="label">Pedido</label>
-   <vaadin-text-field id="order" style="width: 300px;"></vaadin-text-field>
+   <vaadin-text-field id="order" style="width: 400px;"></vaadin-text-field>
    <vaadin-button theme="icon" aria-label="Add new" id="check">
     <iron-icon icon="lumo:search"></iron-icon>
    </vaadin-button>
   </vaadin-form-item>
   <vaadin-form-item style="width: 420px;" id="item_plate">
    <label slot="label">Matrícula</label>
-   <vaadin-text-field id="plate" class="full-width" value="" style="width: 300px;"></vaadin-text-field>
+   <vaadin-text-field id="plate" class="full-width" value="" style="width: 400px;"></vaadin-text-field>
   </vaadin-form-item>
   <br>
   <vaadin-form-item colspan="2" id="item_action">
    <label slot="label">Acción</label>
-   <vaadin-combo-box id="combo_action" style="width: 300px;" page-size="5"></vaadin-combo-box>
+   <vaadin-combo-box id="combo_action" style="width: 400px;" page-size="5"></vaadin-combo-box>
   </vaadin-form-item>
   <vaadin-form-item colspan="2" id="item_type">
    <label slot="label">Tipo de camión</label>
-   <vaadin-combo-box id="combo_type" style="width: 300px;"></vaadin-combo-box>
+   <vaadin-combo-box id="combo_type" style="width: 400px;"></vaadin-combo-box>
   </vaadin-form-item>
   <vaadin-form-item style="width: 450px;" id="item_date">
    <label slot="label">Fecha de reserva</label>
-   <vaadin-combo-box id="date_selection" style="width: 300px;"></vaadin-combo-box>
+   <vaadin-combo-box id="date_selection" style="width: 400px;"></vaadin-combo-box>
   </vaadin-form-item>
   <vaadin-form-item id="item_hour">
    <label slot="label">Hora de reserva</label>
-   <vaadin-combo-box id="hour_selection" style="width: 300px;"></vaadin-combo-box>
+   <vaadin-combo-box id="hour_selection" style="width: 400px;"></vaadin-combo-box>
    <vaadin-button theme="icon" aria-label="Add new" id="check_hours">
     <iron-icon icon="lumo:search"></iron-icon>
    </vaadin-button>

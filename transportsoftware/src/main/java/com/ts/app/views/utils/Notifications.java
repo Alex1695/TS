@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 
@@ -28,8 +29,9 @@ public class Notifications {
 		content.setText("");
 
 		Notification custom = new Notification(content);
+		custom.setText(message);
 		custom.setDuration(time);
-
+		custom.setPosition(Position.MIDDLE);
 		// @formatter:off
 		String styles = ".my-style { "
 		        + "  color:"+color+";"

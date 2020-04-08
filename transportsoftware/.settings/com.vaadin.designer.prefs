@@ -1,7 +1,6 @@
+=\=\=\=\=\=\=
+<<<<<<<=Updated upstream
+>>>>>>>=Stashed changes
 eclipse.preferences.version=1
-<<<<<<< Updated upstream
-serverAddress=192.168.56.1
-=======
-serverAddress=192.168.161.1
->>>>>>> Stashed changes
+serverAddress=192.168.1.41
 serverPort=54784

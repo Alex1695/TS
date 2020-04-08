@@ -37,6 +37,7 @@ import java.util.List;
 
 import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
 import com.ts.app.views.utils.DictionaryManager;
+import com.ts.app.views.utils.Notifications;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 
@@ -57,6 +58,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final String CLASS_NAME = "reservas-styles";
+	private Dialog check_information;
 	
 	public static interface ReservaViewModel extends TemplateModel {
 		
@@ -110,20 +112,32 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     public ReservaView() {
     	
     	init();
+    	
+    	// Indicate a default lenguage 
     	check_spanish.setValue(true);
     	check_english.setValue(false);
 
-    	check.setVisible(false);
-    	check_info.setVisible(false);
-    	cancel.setVisible(false);
-    	check_hours_modify.setVisible(false);
-    	cancel_booking.setVisible(false);
+    	// Set elements of the comboboxes
     	combo_action.setItems("Descarga", "Carga");
     	combo_type.setItems("Trailer", "Lona", "Furgoneta");
+    	
+    	// Add behaviour of the elements
     	order.setClearButtonVisible(true);
     	plate.setClearButtonVisible(true);
     	hour_selection.setReadOnly(true);
-    	
+    	combo_action.setReadOnly(true);
+    	combo_type.setReadOnly(true);
+    	cancel_booking.setEnabled(false);
+    	cancel_booking.setVisible(false);
+    	check_info.setEnabled(false);
+    	date_selection.setReadOnly(true);
+    	plate.setReadOnly(true);
+    	order.setReadOnly(true);
+    	check.setEnabled(false);
+    	check.setVisible(false);
+    	cancel.setEnabled(false);
+    	check_hours_modify.setVisible(false);
+    	check_hours.setEnabled(false);
     	
     	// Create the buttons
     	Button reserve_modify = new Button("Reservar");
@@ -145,37 +159,61 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	check_book.addValueChangeListener(e -> {
     		if (check_book.getValue().equals(true)) {
     			check_modify.setValue(false);
+    			check_modify.setEnabled(false);
+    			check_book.setEnabled(false);
+    			
+    			plate.setReadOnly(false);
+    			combo_action.setReadOnly(false);
+    			combo_type.setReadOnly(false);
+    			order.setReadOnly(false);
+    			date_selection.setReadOnly(false);
+    			cancel.setEnabled(true);
+    			check_info.setEnabled(true);
+    			check_hours.setEnabled(true);
     			reserve_modify.setText("Reservar");
-    			check_info.setVisible(true);
-    			cancel.setVisible(true);
+    			
     		}
     		
     		if (check_book.getValue().equals(false) && check_modify.getValue().equals(false)) {
-    			check_info.setVisible(false);
-    			cancel.setVisible(false);
-    			cancel_booking.setVisible(false);
-    			check.setVisible(false);
+    			hour_selection.setReadOnly(true);
+    	    	combo_action.setReadOnly(true);
+    	    	combo_type.setReadOnly(true);
+    	    	cancel_booking.setEnabled(false);
+    	    	cancel_booking.setVisible(false);
+    	    	check_info.setEnabled(false);
+    	    	date_selection.setReadOnly(true);
+    	    	plate.setReadOnly(true);
+    	    	order.setReadOnly(true);
+    	    	check.setEnabled(false);
+    	    	check.setVisible(false);
+    	    	cancel.setEnabled(false);
+    	    	check_hours_modify.setVisible(false);
+    	    	check_hours.setEnabled(false);
+    	    	
+    	    	plate.clear();
+    	    	order.clear();
+    	    	combo_action.clear();
+    	    	combo_type.clear();
+    	    	date_selection.clear();
+    	    	hour_selection.clear();
     		}
     	});
     	
     	// Behaviour when the checkbox is selected
     	check_modify.addValueChangeListener(e -> {
     		if (check_modify.getValue().equals(true)) {
-    			hour_selection.setReadOnly(false);
     			check_book.setValue(false);
-    			reserve_modify.setText("Modificar");
-    			check_info.setVisible(false);
-    			cancel.setVisible(false);
-    			cancel_booking.setVisible(false);
-    			check.setVisible(true);
-    			item_action.setVisible(false);
-    			item_type.setVisible(false);
-    			item_plate.setVisible(false);
-    			item_date.setVisible(false);
-    			item_hour.setVisible(false);
-//    			item_date.addClassName("hide");
-//    			item_hour.addClassName("hide");
+    			check_modify.setEnabled(false);
+    			check_book.setEnabled(false);
     			
+    			check_hours.setVisible(false);
+    			check_hours_modify.setVisible(true);
+    			check_hours_modify.setEnabled(false);
+    			cancel.setEnabled(true);
+    			order.setReadOnly(false);
+    			check.setVisible(true);
+    			check.setEnabled(true);
+    			reserve_modify.setText("Modificar");
     			
     		}
     		
@@ -183,85 +221,67 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel_booking.setVisible(false);
     		
     		if (check_book.getValue().equals(false) && check_modify.getValue().equals(false)) {
-    			check_info.setVisible(false);
-    			cancel.setVisible(false);
-    			cancel_booking.setVisible(false);
-    			check.setVisible(false);
-    			plate.setReadOnly(false);
-    			order.setReadOnly(false);
-    			order.clear();
-    			plate.clear();
     			hour_selection.setReadOnly(true);
-    			combo_action.clear();
-    			combo_type.clear();
-    			date_selection.clear();
-    			item_action.setVisible(true);
-    			item_type.setVisible(true);
-    			item_plate.setVisible(true);
-    			item_date.setVisible(true);
-    			item_hour.setVisible(true);
+    	    	combo_action.setReadOnly(true);
+    	    	combo_type.setReadOnly(true);
+    	    	cancel_booking.setEnabled(false);
+    	    	cancel_booking.setVisible(false);
+    	    	check_info.setEnabled(false);
+    	    	date_selection.setReadOnly(true);
+    	    	plate.setReadOnly(true);
+    	    	order.setReadOnly(true);
+    	    	check.setEnabled(false);
+    	    	check.setVisible(false);
+    	    	cancel.setEnabled(false);
+    	    	check_hours_modify.setVisible(false);
+    	    	check_hours_modify.setEnabled(false);
+    	    	check_hours.setEnabled(false);
+    	    	
+    	    	plate.clear();
+    	    	order.clear();
+    	    	combo_action.clear();
+    	    	combo_type.clear();
+    	    	date_selection.clear();
+    	    	hour_selection.clear();
     		}
     	});
     	
-    	// Creation of the notification of a correct booking
-    	Label booking_correct = new Label("Reserva realizada!");
-    	Notification notification_booking_correct = new Notification(booking_correct);
-    	notification_booking_correct.setDuration(3000);
-    	notification_booking_correct.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification of elimination of a booking
-    	Label booking_delete = new Label("Reserva eliminada!");
-    	Notification notification_booking_delete = new Notification(booking_delete);
-    	notification_booking_delete.setDuration(3000);
-    	notification_booking_delete.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when missing data
-    	Label booking_wrong = new Label("Faltan datos o son incorrectos!");
-    	Notification notification_booking_wrong = new Notification(booking_wrong);
-    	notification_booking_wrong.setDuration(3000);
-    	notification_booking_wrong.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when the order is incorrect
-    	Label order_wrong = new Label("Pedido no válido!");
-    	Notification notification_order_wrong = new Notification(order_wrong);
-    	notification_order_wrong.setDuration(3000);
-    	notification_order_wrong.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when there is missing data for the hours
-    	Label missing_data_hours = new Label("Faltan el dato del tipo de camión, si es carga/descarga o la matrícula!");
-    	Notification notification_missing_data_hours = new Notification(missing_data_hours);
-    	notification_missing_data_hours.setDuration(3000);
-    	notification_missing_data_hours.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when there is less than 24hours to the booking date
-    	Label booking_cancelation_warning = new Label("No se puede cancelar la reserva");
-    	Notification notification_booking_cancelation_warning = new Notification(booking_cancelation_warning);
-    	notification_booking_cancelation_warning.setDuration(3000);
-    	notification_booking_cancelation_warning.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when the orders is already used for a booking
-    	Label booking_used_order_warning = new Label("No se puede realizar la reserva. Ya se ha realizado una reserva con ese pedido!");
-    	Notification notification_used_order_warning = new Notification(booking_used_order_warning);
-    	notification_used_order_warning.setDuration(3000);
-    	notification_used_order_warning.setPosition(Position.MIDDLE);
-    	
     	// Behaviour when the cancel button is clicked
     	cancel.addClickListener(e -> {
-    		order.clear();
-    		plate.clear();
-    		hour_selection.clear();
-    		date_selection.clear();
-    		combo_action.clear();
-    		combo_type.clear();
-    		check_book.setValue(false);
-    		check_modify.setValue(false);
-    		check_hours.setVisible(true);
-    		check_hours_modify.setVisible(false);
+    		check_book.setEnabled(true);
+    		check_modify.setEnabled(true);
+    		hour_selection.setReadOnly(true);
+	    	combo_action.setReadOnly(true);
+	    	combo_type.setReadOnly(true);
+	    	cancel_booking.setEnabled(false);
+	    	cancel_booking.setVisible(false);
+	    	check_info.setEnabled(false);
+	    	date_selection.setReadOnly(true);
+	    	plate.setReadOnly(true);
+	    	order.setReadOnly(true);
+	    	check.setEnabled(false);
+	    	check.setVisible(false);
+	    	cancel.setEnabled(false);
+	    	check_hours_modify.setVisible(false);
+	    	check_hours.setEnabled(false);
+	    	
+	    	plate.clear();
+	    	order.clear();
+	    	combo_action.clear();
+	    	combo_type.clear();
+	    	date_selection.clear();
+	    	hour_selection.clear();
     		
     		if (check_book.getValue().equals(true)) {
+    			check_book.setValue(false);
     			hour_selection.setReadOnly(true);
     		} else if (check_modify.getValue().equals(true)) {
-    			hour_selection.setReadOnly(false);
+    			check_modify.setValue(false);
+    			check_hours.setVisible(true);
+    			check_hours.setEnabled(false);
+    			check_hours_modify.setVisible(false);
+    			check_hours_modify.setEnabled(false);
+    			hour_selection.setReadOnly(true);
     		}
     	});
     	
@@ -343,7 +363,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		
 		// When the button is clicked
     	check_hours.addClickListener(e -> {
-
+    		
     		// Get the data of the type and the action
     		int value_type = data.getType();
     		int load_download = data.getAction();
@@ -354,8 +374,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		
     		// If the data is missing
     		if (value_type == 0 || load_download == 0 || plate.equals("")) {
-    			// Show notification of missing data
-    			notification_missing_data_hours.open();
+    			// Show notification of correct modification
+        		Notifications.customNotify("Faltan el dato del tipo de camión, si es carga/descarga o la matrícula!", 3000, "green");
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
@@ -402,7 +422,9 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	
     	// When the button is clicked
     	check_hours_modify.addClickListener(e -> {
-
+    		
+    		hour_selection.setReadOnly(false);
+    		
     		// Get the data of the type and the action
     		int value_type = data.getType();
     		int load_download = data.getAction();
@@ -413,8 +435,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		
     		// If the data is missing
     		if (value_type == 0 || load_download == 0 || plate.equals("")) {
-    			// Show notification of missing data
-    			notification_missing_data_hours.open();
+    			// Show notification of correct modification
+        		Notifications.customNotify("Faltan el dato del tipo de camión, si es carga/descarga o la matrícula!", 3000, "green");
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
@@ -463,6 +485,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 
     	// Behaviour of the check data for one order
     	check.addClickListener(e -> {
+    		
     		// We read the data of the orders and the bookings saved
         	List<String> orders = bookings.read_order();
         	List<booking> books = bookings.read();
@@ -475,18 +498,17 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         	// If the order is in the database
     		if (orders.contains(order_string) == true) {
     			
-    			check_info.setVisible(true);
-    			cancel.setVisible(true);
+    			check_info.setEnabled(true);
+    			cancel_booking.setEnabled(true);
     			cancel_booking.setVisible(true);
-    			check.setVisible(true);
     			order.setReadOnly(true);
-    			item_action.setVisible(true);
-    			item_type.setVisible(true);
-    			item_plate.setVisible(true);
-    			item_date.setVisible(true);
-    			item_hour.setVisible(true);
-    			check_hours.setVisible(false);
-    			check_hours_modify.setVisible(true);
+        		check.setEnabled(false);
+        		plate.setReadOnly(false);
+        		combo_action.setReadOnly(false);
+        		combo_type.setReadOnly(false);
+        		date_selection.setReadOnly(false);
+        		check_hours_modify.setEnabled(true);
+
     			
     			// We get the data of the order
     			for (booking element: books) {
@@ -529,41 +551,57 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     				}
     			}
     		} else {
-				notification_order_wrong.open();
+    			// Show notification of booking incorrect
+    			Notifications.customNotify("Pedido no válido!", 3000, "green");
 			}
     	});
 
+    	
     	// Behaviour of the button
     	check_info.addClickListener(e -> { 
-    		// Create a new dialog
-    		Dialog check_information = new Dialog();
     		
-        	// Create the labels to show data
-    		Label title = new Label("Los datos del pedido son: ");
-        	Label info_order = new Label("- El pedido es: " +  Integer.toString(data.getOrder()));
-        	Label info_plate = new Label("- La matrícula del camión es: " + data.getPlate());
-        	Label info_action = new Label("- La acción requerida es: " + combo_action.getValue());
-        	Label info_type = new Label("- El camión es un: " + combo_type.getValue());
-        	Label info_date = new Label("- El día de la reserva es el: " + date_selection.getValue());
-        	Label info_hour = new Label("- La hora reservada es: " + hour_selection.getValue());
-    		
-        	// Creation of the layouts
-        	VerticalLayout vertical_check_information = new VerticalLayout();
-        	HorizontalLayout horizontal_botons_check_information = new HorizontalLayout();
+    		String value_plate = data.getPlate().toUpperCase();
+        	int value_type = data.getType();
+        	int value_order = data.getOrder();
+        	int load_download = data.getAction();
+        	LocalDate day = data.getDay();
+        	String hour = hour_selection.getValue();
         	
-        	// Addition of the components to the layouts
-        	horizontal_botons_check_information.add(close, reserve_modify);
-        	vertical_check_information.add(title, info_order, info_plate, info_action, info_type, info_date, info_hour);
-        	check_information.add(vertical_check_information, horizontal_botons_check_information);
-      
-        	// Open the window
-    		check_information.open(); 
-    		
-    		// Behaviour of the button
-    		close.addClickListener(e1 -> { 
-    			// Closing the window
-    			check_information.close(); 
-    		});
+    		if (value_plate == "" || value_order == 0 || value_type == 0 || day == null || load_download == 0 || hour == null) {
+
+				// Show notification of booking incorrect
+    			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
+    		} else {
+	    		// Create a new dialog
+	    		check_information = new Dialog();
+	    		
+	        	// Create the labels to show data
+	    		Label title = new Label("Los datos del pedido son: ");
+	        	Label info_order = new Label("- El pedido es: " +  Integer.toString(data.getOrder()));
+	        	Label info_plate = new Label("- La matrícula del camión es: " + data.getPlate());
+	        	Label info_action = new Label("- La acción requerida es: " + combo_action.getValue());
+	        	Label info_type = new Label("- El camión es un: " + combo_type.getValue());
+	        	Label info_date = new Label("- El día de la reserva es el: " + date_selection.getValue());
+	        	Label info_hour = new Label("- La hora reservada es: " + hour_selection.getValue());
+	    		
+	        	// Creation of the layouts
+	        	VerticalLayout vertical_check_information = new VerticalLayout();
+	        	HorizontalLayout horizontal_botons_check_information = new HorizontalLayout();
+	        	
+	        	// Addition of the components to the layouts
+	        	horizontal_botons_check_information.add(close, reserve_modify);
+	        	vertical_check_information.add(title, info_order, info_plate, info_action, info_type, info_date, info_hour);
+	        	check_information.add(vertical_check_information, horizontal_botons_check_information);
+	      
+	        	// Open the window
+	    		check_information.open(); 
+	    		
+	    		// Behaviour of the button
+	    		close.addClickListener(e1 -> { 
+	    			// Closing the window
+	    			check_information.close(); 
+	    		});
+    		}
     	});
     	
     	// Behaviour when the button reserve or modify is clicked
@@ -613,14 +651,16 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		            		hour_selection.clear();
 		            		date_selection.clear();
 		            		
-		            		// Show notification of correct booking
-		            		notification_booking_correct.open();
+		            		// Show notification of correct booking		        		
+		            		Notifications.customNotify("Reserva realizada!", 3000, "green");
 		            		
 	    				} else {
-	    					notification_order_wrong.open();
+	    					// Show notification of booking incorrect
+	    	    			Notifications.customNotify("Pedido no válido!", 3000, "green");
 	    				}
     				} else {
-    					notification_used_order_warning.open();
+    					// Show notification of used ordered
+    	    			Notifications.customNotify("No se puede realizar la reserva. Ya se ha realizado una reserva con ese pedido!", 3000, "green");
 		    	}
 	    		
 	    		// If the checkbox of modify is selected
@@ -645,15 +685,16 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         			item_hour.setVisible(false);
         			
         			// Show notification of correct modification
-            		booking_correct.setText("Modificación realizada");
-            		notification_booking_correct.open();
+            		Notifications.customNotify("Modificación realizada!", 3000, "green");
     			} else {
     				// Show notification of booking incorrect
-	    			notification_booking_wrong.open();
+	    			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
 	    		}
     		} else {
-    			notification_booking_wrong.open();
+    			// Show notification of booking incorrect
+    			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
     		}
+    		check_information.close();
     	});
 		
     	// Behaviour when the cancel booking button is clicked
@@ -712,15 +753,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		    		date_selection.clear();
     		    		
     		    		// Show notification when delete is correct
-    		    		notification_booking_delete.open();
+    		    		Notifications.customNotify("Reserva eliminada", 3000, "green");
     				} else {
     					// Show notification of wrong order
-    					notification_order_wrong.open();
+    	    			Notifications.customNotify("Pedido no válido!", 3000, "green");
     		    	}
 
         		} else {
-        			// Show the notification
-        			notification_booking_cancelation_warning.open();
+        			// Show notification when a book cant be cancelled
+        			Notifications.customNotify("No se puede cancelar la reserva", 3000, "green");
         		}
     		} catch (Exception e1) {
     			e1.printStackTrace();
