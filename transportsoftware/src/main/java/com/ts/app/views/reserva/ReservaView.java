@@ -644,12 +644,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		    				// Behaviour when the booking is created
 		    				order.clear();
 		            		plate.clear();
-		            		check_book.setValue(false);
-		            		check_modify.setValue(false);
 		            		combo_action.clear();
 		            		combo_type.clear();
 		            		hour_selection.clear();
 		            		date_selection.clear();
+		            		check_book.setEnabled(true);
+		            		check_modify.setEnabled(true);
+		            		check_book.setValue(false);
+		            		check_modify.setValue(false);
 		            		
 		            		// Show notification of correct booking		        		
 		            		Notifications.customNotify("Reserva realizada!", 3000, "green");
@@ -671,6 +673,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     				// behaviour when the modification is done
     				order.clear();
             		plate.clear();
+            		check_book.setEnabled(true);
+            		check_modify.setEnabled(true);
             		check_book.setValue(false);
             		check_modify.setValue(false);
             		combo_action.clear();
@@ -678,11 +682,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
             		hour_selection.clear();
             		date_selection.clear();
             		order.setReadOnly(false);
-            		item_action.setVisible(false);
-        			item_type.setVisible(false);
-        			item_plate.setVisible(false);
-        			item_date.setVisible(false);
-        			item_hour.setVisible(false);
         			
         			// Show notification of correct modification
             		Notifications.customNotify("Modificación realizada!", 3000, "green");
@@ -744,13 +743,16 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     					
     					// Behaviour when the delete is done
     					order.clear();
-    		    		plate.clear();
-    		    		check_book.setValue(false);
-    		    		check_modify.setValue(false);
-    		    		combo_action.clear();
-    		    		combo_type.clear();
-    		    		hour_selection.clear();
-    		    		date_selection.clear();
+                		plate.clear();
+                		check_book.setEnabled(true);
+                		check_modify.setEnabled(true);
+                		check_book.setValue(false);
+                		check_modify.setValue(false);
+                		combo_action.clear();
+                		combo_type.clear();
+                		hour_selection.clear();
+                		date_selection.clear();
+                		order.setReadOnly(true);
     		    		
     		    		// Show notification when delete is correct
     		    		Notifications.customNotify("Reserva eliminada", 3000, "green");
