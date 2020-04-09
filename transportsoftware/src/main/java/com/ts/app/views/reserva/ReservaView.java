@@ -483,6 +483,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	// Select the hour of the booking
     	hour_selection.addValueChangeListener(e -> { data.setHour(e.getValue()); });
 
+    	
+    	int action_c = 0;
+		if (combo_action.getValue() == "Carga") {
+			action_c = 1;
+		} else {
+			action_c = 2;
+		}
+		
+		
     	// Behaviour of the check data for one order
     	check.addClickListener(e -> {
     		
@@ -556,21 +565,53 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 			}
     	});
 
-    	
     	// Behaviour of the button
     	check_info.addClickListener(e -> { 
     		
+    		List<booking> books = bookings.read();
+    		List<String> orders = bookings.read_order();
     		String value_plate = data.getPlate().toUpperCase();
         	int value_type = data.getType();
         	int value_order = data.getOrder();
         	int load_download = data.getAction();
         	LocalDate day = data.getDay();
         	String hour = hour_selection.getValue();
+        	int action_element = 0;
+        	int tpye_element = 0;
+        	String hour_element = "";
         	
-    		if (value_plate == "" || value_order == 0 || value_type == 0 || day == null || load_download == 0 || hour == null) {
+        	// Order in string format
+        	String order_string =  Integer.toString(value_order);
+        	
+        	// If the order is in the database
+    		if (orders.contains(order_string) == true) {
+    			for (booking element: books) {
+    				
+    				// We get the order from the books made
+    				int order_searched = element.getOrder_request();
+    				String order_searched_s = Integer.toString(order_searched);
+    				
+    				// If the order search and an order from the bookings made are the same
+    				if (order_searched_s.equals(order_string)) {
+    					int index = books.indexOf(element);
+    					
+    					// Get the data we need
+    					action_element = books.get(index).getLoadDownload();
+    					tpye_element = books.get(index).getTruckType();
+    					hour_element = books.get(index).getHour();
+    				}
+    			}
+    		}
+    		
+    		if (action_element != load_download || tpye_element != value_type && hour_element.equals(hour)) {
+    			// Show notification of booking incorrect
+    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
+				hour_selection.clear();
+			} else if (value_plate == "" || value_order == 0 || value_type == 0 || day == null || load_download == 0 || hour == null) {
 
 				// Show notification of booking incorrect
     			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
+
     		} else {
 	    		// Create a new dialog
 	    		check_information = new Dialog();
@@ -681,7 +722,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
             		combo_type.clear();
             		hour_selection.clear();
             		date_selection.clear();
-            		order.setReadOnly(false);
+            		order.setReadOnly(true);
         			
         			// Show notification of correct modification
             		Notifications.customNotify("Modificación realizada!", 3000, "green");

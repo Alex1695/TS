@@ -638,7 +638,6 @@ public class BookingService implements CRUD{
 		    preparedStmt.setInt    (7, order_request);
 	
 		    // execute the preparedstatement
-		    System.out.println(query);
 		    preparedStmt.execute();
 	    }catch (SQLException e) {
 				// TODO Auto-generated catch block

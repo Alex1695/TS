@@ -13,7 +13,7 @@ import com.vaadin.flow.server.StreamResource;
 
 public class Notifications {
 
-	public static int DEFAULTDURATION = 30000;
+	public static int DEFAULTDURATION = 3000;
 	public static String ERRORCOLOR = "red";
 	public static String SUCCESSCOLOR = "green";
 	
