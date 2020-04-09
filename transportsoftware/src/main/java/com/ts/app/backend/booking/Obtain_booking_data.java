@@ -12,6 +12,10 @@ public class Obtain_booking_data {
 	private int value_order;
 	private LocalDate day;
 	private String hour_booking;
+	private int old_action;
+	private int old_type;
+	private String arrival_hour;
+	private String exit_hour;
 	
 	public List<booking> books;
 	
@@ -23,9 +27,20 @@ public class Obtain_booking_data {
 		this.books = books;
 	}
 	
-	private String arrival_hour;
-	private String exit_hour;
+	public void setOldAction(String load_download) {
+		if (load_download == "Descarga") {
+			old_action = 2;
+			
+		} else if (load_download == "Carga") {
+			old_action = 1;
+		} else {
+			old_action = 0;
+		}
+	}
 	
+	public int getOldAction() {
+		return old_action;
+	}
 	
 	public String getArrival_hour() {
 		return arrival_hour;
@@ -115,5 +130,21 @@ public class Obtain_booking_data {
 	
 	public int getType() {
 		return type;
+	}
+	
+	public void setOldType(String truck_type) {
+		if (truck_type == null) {
+			old_type = 0;
+		} else if (truck_type == "Trailer"){
+			old_type = 3;
+		} else if (truck_type == "Lona") {
+			old_type = 2;
+		} else if (truck_type == "Furgoneta") {
+			old_type = 1;
+		}
+	}
+	
+	public int getOldType() {
+		return old_type;
 	}
 }

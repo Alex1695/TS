@@ -124,6 +124,10 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	// Add behaviour of the elements
     	order.setClearButtonVisible(true);
     	plate.setClearButtonVisible(true);
+    	hour_selection.setClearButtonVisible(true);
+    	date_selection.setClearButtonVisible(true);
+    	combo_action.setClearButtonVisible(true);
+    	combo_type.setClearButtonVisible(true);
     	hour_selection.setReadOnly(true);
     	combo_action.setReadOnly(true);
     	combo_type.setReadOnly(true);
@@ -285,9 +289,24 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		}
     	});
     	
+    	
     	// Obtain the data of the comboboxes and textfields
-    	combo_action.addValueChangeListener(e -> { data.setAction(e.getValue()); });
-    	combo_type.addValueChangeListener(e -> { data.setType(e.getValue()); });
+    	combo_action.addValueChangeListener(e -> { data.setAction(e.getValue()); data.setOldAction(e.getOldValue());
+    		if (data.getOldAction() == 0) {
+    		
+    		} else if (data.getAction() != data.getOldAction()) {
+    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
+    			hour_selection.clear();
+    		}
+    	});
+    	combo_type.addValueChangeListener(e -> { data.setType(e.getValue()); data.setOldType(e.getOldValue());
+    		if (data.getOldType() == 0) {
+    			
+    		}else if (data.getType() != data.getOldType()) {
+    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
+    			hour_selection.clear();
+    		}
+    	});
     	plate.addValueChangeListener(e -> { data.setPlate(e.getValue()); });
     	order.addValueChangeListener(e -> { data.setOrder(e.getValue()); });
     	
@@ -482,15 +501,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	
     	// Select the hour of the booking
     	hour_selection.addValueChangeListener(e -> { data.setHour(e.getValue()); });
-
-    	
-    	int action_c = 0;
-		if (combo_action.getValue() == "Carga") {
-			action_c = 1;
-		} else {
-			action_c = 2;
-		}
-		
 		
     	// Behaviour of the check data for one order
     	check.addClickListener(e -> {
@@ -518,16 +528,18 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         		date_selection.setReadOnly(false);
         		check_hours_modify.setEnabled(true);
 
-    			
+        		int i = 0;
     			// We get the data of the order
     			for (booking element: books) {
     				// We get the order from the books made
     				int order_searched = element.getOrder_request();
     				String order_searched_s = Integer.toString(order_searched);
     				
+    				
     				// If the order search and an order from the bookings made are the same
     				if (order_searched_s.equals(order_string)) {
     					// Get the index of the elements
+    					i = 1;
     					int index = books.indexOf(element);
     					
     					// Get the data me need
@@ -559,6 +571,22 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	    			}
     				}
     			}
+    			if (i == 0) {
+	    			check_info.setEnabled(false);
+	    			cancel_booking.setEnabled(false);
+	    			cancel_booking.setVisible(false);
+	    			order.setReadOnly(false);
+	        		check.setEnabled(true);
+	        		plate.setReadOnly(true);
+	        		combo_action.setReadOnly(true);
+	        		combo_type.setReadOnly(true);
+	        		date_selection.setReadOnly(true);
+	        		check_hours_modify.setEnabled(false);
+	        		
+					// Show notification of booking incorrect
+	    			Notifications.customNotify("Este pedido no tiene una reserva asociada!", 3000, "green");
+
+    			}
     		} else {
     			// Show notification of booking incorrect
     			Notifications.customNotify("Pedido no válido!", 3000, "green");
@@ -570,44 +598,48 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		
     		List<booking> books = bookings.read();
     		List<String> orders = bookings.read_order();
-    		String value_plate = data.getPlate().toUpperCase();
-        	int value_type = data.getType();
+    		
+    		String value_plate = plate.getValue().toUpperCase();
+        	String value_type = combo_type.getValue();
         	int value_order = data.getOrder();
-        	int load_download = data.getAction();
-        	LocalDate day = data.getDay();
+        	String load_download = combo_action.getValue();
+        	String day = date_selection.getValue();
         	String hour = hour_selection.getValue();
         	int action_element = 0;
         	int tpye_element = 0;
         	String hour_element = "";
         	
-        	// Order in string format
-        	String order_string =  Integer.toString(value_order);
-        	
-        	// If the order is in the database
-    		if (orders.contains(order_string) == true) {
-    			for (booking element: books) {
-    				
-    				// We get the order from the books made
-    				int order_searched = element.getOrder_request();
-    				String order_searched_s = Integer.toString(order_searched);
-    				
-    				// If the order search and an order from the bookings made are the same
-    				if (order_searched_s.equals(order_string)) {
-    					int index = books.indexOf(element);
-    					
-    					// Get the data we need
-    					action_element = books.get(index).getLoadDownload();
-    					tpye_element = books.get(index).getTruckType();
-    					hour_element = books.get(index).getHour();
-    				}
-    			}
-    		}
-    		
-    		if (action_element != load_download || tpye_element != value_type && hour_element.equals(hour)) {
-    			// Show notification of booking incorrect
-    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
-				hour_selection.clear();
-			} else if (value_plate == "" || value_order == 0 || value_type == 0 || day == null || load_download == 0 || hour == null) {
+        	//if (check_modify.getValue().equals(true)) {
+	        	// Order in string format
+	        	String order_string =  Integer.toString(value_order);
+	        	
+	        	// If the order is in the database
+	    		if (orders.contains(order_string) == true) {
+	    			for (booking element: books) {
+	    				
+	    				// We get the order from the books made
+	    				int order_searched = element.getOrder_request();
+	    				String order_searched_s = Integer.toString(order_searched);
+	    				
+	    				// If the order search and an order from the bookings made are the same
+	    				if (order_searched_s.equals(order_string)) {
+	    					int index = books.indexOf(element);
+	    					
+	    					// Get the data we need
+	    					action_element = books.get(index).getLoadDownload();
+	    					tpye_element = books.get(index).getTruckType();
+	    					hour_element = books.get(index).getHour();
+	    				}
+	    			}
+	    		}
+	    		/*if (action_element != load_download || tpye_element != value_type && hour_element.equals(hour)) {
+	    			// Show notification of booking incorrect
+	    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
+					hour_selection.clear();
+				} */
+	    	//}
+	    		
+    		if (value_order == 0  || hour == null || value_type == null || load_download.equals(null) || day.equals(null) || value_plate.equals(null)) {
 
 				// Show notification of booking incorrect
     			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
@@ -617,7 +649,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    		check_information = new Dialog();
 	    		
 	        	// Create the labels to show data
-	    		Label title = new Label("Los datos del pedido son: ");
+    			Label title = new Label("Los datos del pedido son: ");
 	        	Label info_order = new Label("- El pedido es: " +  Integer.toString(data.getOrder()));
 	        	Label info_plate = new Label("- La matrícula del camión es: " + data.getPlate());
 	        	Label info_action = new Label("- La acción requerida es: " + combo_action.getValue());
@@ -632,17 +664,19 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	        	// Addition of the components to the layouts
 	        	horizontal_botons_check_information.add(close, reserve_modify);
 	        	vertical_check_information.add(title, info_order, info_plate, info_action, info_type, info_date, info_hour);
+	        	 
 	        	check_information.add(vertical_check_information, horizontal_botons_check_information);
-	      
+			      
 	        	// Open the window
-	    		check_information.open(); 
-	    		
-	    		// Behaviour of the button
-	    		close.addClickListener(e1 -> { 
-	    			// Closing the window
-	    			check_information.close(); 
-	    		});
-    		}
+	    		check_information.open();
+		    		
+	    	}
+    		
+    		// Behaviour of the button
+    		close.addClickListener(e1 -> { 
+    			// Closing the window
+    			check_information.close(); 
+    		});
     	});
     	
     	// Behaviour when the button reserve or modify is clicked
