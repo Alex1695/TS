@@ -16,9 +16,22 @@ public class Obtain_booking_data {
 	private int old_type;
 	private String arrival_hour;
 	private String exit_hour;
+	private LocalDate old_day;
 	
 	public List<booking> books;
 	
+	public LocalDate getOld_day() {
+		return old_day;
+	}
+
+	public void setOld_day(LocalDate day_reserved) {
+		if(day_reserved == null) {
+			old_day = null;
+		} else if (day_reserved != null){
+			old_day = day_reserved;
+		}
+	}
+
 	public List<booking> getBooks(){
 		return books;
 	}

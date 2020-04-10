@@ -7,6 +7,7 @@ import com.ts.app.backend.model.dock;
 import com.ts.app.backend.service.BookingService;
 import com.ts.app.backend.service.DockService;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -301,13 +302,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    	check_hours_modify.setVisible(false);
 	    	check_hours.setEnabled(false);
 	    	
+	    	hour_selection.clear();
 	    	plate.clear();
 	    	order.clear();
 	    	combo_action.clear();
 	    	combo_type.clear();
 	    	date_selection.clear();
-	    	hour_selection.clear();
-    		
+	    	data.setOld_day(null);
+	    	data.setDay(null);
+	    	
     		if (check_book.getValue().equals(true)) {
     			check_book.setValue(false);
     			hour_selection.setReadOnly(true);
@@ -323,32 +326,54 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	
     	
     	// Obtain the data of the comboboxes and textfields
-    	combo_action.addValueChangeListener(e -> { data.setAction(e.getValue()); data.setOldAction(e.getOldValue());
+    	combo_action.addValueChangeListener(e -> { 
+    		data.setAction(e.getValue()); 
+    		data.setOldAction(e.getOldValue());
+    		
     		if (data.getOldAction() == 0) {
     		
     		} else if (data.getAction() != data.getOldAction()) {
-    			try {
-					Notifications.customNotify(DictionaryManager.translateField("booking.changesNotify"), 3000, "green");
-				} catch (UnsupportedEncodingException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-    			hour_selection.clear();
+    			if (check_book.isEnabled() || check_modify.isEnabled()) {
+    				hour_selection.clear();
+	    			hour_selection.setReadOnly(true);
+    			}else if (data.getOldAction() != 0){
+    				try {
+    					Notifications.customNotify(DictionaryManager.translateField("booking.changesNotify"), 3000, "green");
+    				} catch (UnsupportedEncodingException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+    				hour_selection.clear();
+	    			hour_selection.setReadOnly(true);
+    			}
     		}
     	});
-    	combo_type.addValueChangeListener(e -> { data.setType(e.getValue()); data.setOldType(e.getOldValue());
+    	
+    	combo_type.addValueChangeListener(e -> { 
+    		data.setType(e.getValue()); 
+    		data.setOldType(e.getOldValue());
+
     		if (data.getOldType() == 0) {
     			
     		}else if (data.getType() != data.getOldType()) {
-    			try {
-					Notifications.customNotify(DictionaryManager.translateField("booking.changesNotify"), 3000, "green");
-				} catch (UnsupportedEncodingException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-    			hour_selection.clear();
+    			
+    			if (check_book.isEnabled() || check_modify.isEnabled()) {
+    				hour_selection.clear();
+	    			hour_selection.setReadOnly(true);
+	    			
+    			}else if (data.getOldType() != 0){
+    				try {
+    					Notifications.customNotify(DictionaryManager.translateField("booking.changesNotify"), 3000, "green");
+    				} catch (UnsupportedEncodingException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+	    			hour_selection.clear();
+	    			hour_selection.setReadOnly(true);
+    			}
     		}
     	});
+    	
     	plate.addValueChangeListener(e -> { data.setPlate(e.getValue()); });
     	order.addValueChangeListener(e -> { data.setOrder(e.getValue()); });
     	
@@ -412,6 +437,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	        	LocalDate localDate = LocalDate.parse(day);
 	        	data.setDay(localDate);
         	}
+        	
+        	if (e.getOldValue() != null) {
+	        	String old_day = e.getOldValue();
+	        	LocalDate old_localDate = LocalDate.parse(old_day);
+	        	data.setOld_day(old_localDate);
+        	}
         });
 
         // Create strings and list to save the hours
@@ -428,13 +459,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		// Get the data of the type and the action
     		int value_type = data.getType();
     		int load_download = data.getAction();
-    		String plate = data.getPlate();
+    		String value_plate = plate.getValue();
     		
     		// Delete all the items
+    		docks_available.removeAll(docks_available);
     		hours_available.removeAll(hours_available);
     		
     		// If the data is missing
-    		if (value_type == 0 || load_download == 0 || plate.equals("")) {
+    		if (value_type == 0 || load_download == 0 || value_plate.equals("")) {
     			// Show notification of correct modification
         		
     			try {
@@ -446,8 +478,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
-	    		List<String> hours_searched = bookings.read_hours(plate);
-	    		
+	    		List<String> hours_searched = bookings.read_hours(value_plate);
+	
 	    		// Get the numbers of docks
 	    		int num_elements = docks.size();
 	
@@ -473,17 +505,29 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	    				hours_available.add(hours[i]);
 	    			}
 	    		}
-
+	    		
 	    		for (int i = 0; i<hours_available.size(); i++) {
 	    			for (int j = 0; j<hours_searched.size();j++) {
 	    				if (hours_available.get(i).equals(hours_searched.get(j))) {
 		    				hours_available.remove(i);
 		    			}
 	    			}
-	    			
 	    		}
-	    		hour_selection.setItems(hours_available);
 	    		
+	    		if (hours_available.size() != 0) {
+	    			hour_selection.setItems(hours_available);
+	    			
+	    			for (int i = 0; i< available.length; i++) {
+		    			available[i] = "false";
+		    		}
+	    		} else {
+	    			try {
+						Notifications.customNotify(DictionaryManager.translateField("booking.noHoursNotify"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+	    		}
     		}
     	});
     	
@@ -495,13 +539,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		// Get the data of the type and the action
     		int value_type = data.getType();
     		int load_download = data.getAction();
-    		String plate = data.getPlate();
+    		String value_plate = plate.getValue();
     		
     		// Delete all the items
+    		docks_available.removeAll(docks_available);
     		hours_available.removeAll(hours_available);
     		
     		// If the data is missing
-    		if (value_type == 0 || load_download == 0 || plate.equals("")) {
+    		if (value_type == 0 || load_download == 0 || value_plate.equals("")) {
     			// Show notification of correct modification
         		try {
 					Notifications.customNotify(DictionaryManager.translateField("booking.missingDataNotify"), 3000, "green");
@@ -512,7 +557,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
-	    		List<String> hours_searched = bookings.read_hours(plate);
+	    		List<String> hours_searched = bookings.read_hours(value_plate);
 	    		
 	    		// Get the numbers of docks
 	    		int num_elements = docks.size();
@@ -546,9 +591,22 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		    				hours_available.remove(i);
 		    			}
 	    			}
-	    			
 	    		}
-	    		hour_selection.setItems(hours_available);
+	    		
+	    		if (hours_available.size() != 0) {
+	    			hour_selection.setItems(hours_available);
+	    			
+	    			for (int i = 0; i< available.length; i++) {
+		    			available[i] = "false";
+		    		}
+	    		} else {
+	    			try {
+						Notifications.customNotify(DictionaryManager.translateField("booking.noHoursNotify"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+	    		}
     		}
     	});
     	
@@ -569,7 +627,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         	String order_string =  Integer.toString(value_order);
         	// If the order is in the database
     		if (orders.contains(order_string) == true) {
-    			
+    			data.setOldType(null);
+    			data.setOldAction(null);
     			check_info.setEnabled(true);
     			cancel_booking.setEnabled(true);
     			cancel_booking.setVisible(true);
@@ -582,12 +641,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         		check_hours_modify.setEnabled(true);
 
         		int i = 0;
+        		
     			// We get the data of the order
     			for (booking element: books) {
     				// We get the order from the books made
     				int order_searched = element.getOrder_request();
     				String order_searched_s = Integer.toString(order_searched);
-    				
     				
     				// If the order search and an order from the bookings made are the same
     				if (order_searched_s.equals(order_string)) {
@@ -624,6 +683,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	    			}
     				}
     			}
+    			
     			if (i == 0) {
 	    			check_info.setEnabled(false);
 	    			cancel_booking.setEnabled(false);
@@ -659,50 +719,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	// Behaviour of the button
     	check_info.addClickListener(e -> { 
     		
-    		List<booking> books = bookings.read();
-    		List<String> orders = bookings.read_order();
-    		
     		String value_plate = plate.getValue().toUpperCase();
         	String value_type = combo_type.getValue();
         	int value_order = data.getOrder();
         	String load_download = combo_action.getValue();
         	String day = date_selection.getValue();
         	String hour = hour_selection.getValue();
-        	int action_element = 0;
-        	int tpye_element = 0;
-        	String hour_element = "";
-        	
-        	//if (check_modify.getValue().equals(true)) {
-	        	// Order in string format
-	        	String order_string =  Integer.toString(value_order);
-	        	
-	        	// If the order is in the database
-	    		if (orders.contains(order_string) == true) {
-	    			for (booking element: books) {
-	    				
-	    				// We get the order from the books made
-	    				int order_searched = element.getOrder_request();
-	    				String order_searched_s = Integer.toString(order_searched);
-	    				
-	    				// If the order search and an order from the bookings made are the same
-	    				if (order_searched_s.equals(order_string)) {
-	    					int index = books.indexOf(element);
-	    					
-	    					// Get the data we need
-	    					action_element = books.get(index).getLoadDownload();
-	    					tpye_element = books.get(index).getTruckType();
-	    					hour_element = books.get(index).getHour();
-	    				}
-	    			}
-	    		}
-	    		/*if (action_element != load_download || tpye_element != value_type && hour_element.equals(hour)) {
-	    			// Show notification of booking incorrect
-	    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
-					hour_selection.clear();
-				} */
-	    	//}
+
 	    		
-    		if (value_order == 0  || hour == null || value_type == null || load_download.equals(null) || day.equals(null) || value_plate.equals(null)) {
+    		if (value_order == 0 || hour == null || value_type == null || load_download == null || day == null || value_plate == null) {
 
 				// Show notification of booking incorrect
     			try {
@@ -769,15 +794,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
         	
     		int state = 1;
     		int dock_chosen = 0;
-    	
     		
     		// If all the form items are filled
     		if (value_plate != "" && value_order != 0 && value_type != 0 && day != null && load_download != 0 && hour_selection != null
     				 && check_book.getValue().equals(true) || check_modify.getValue().equals(true)){
     			
-    			 //We get the first dock available and delete it from the array
-	    		dock_chosen = docks_available.get(0);
-	    		docks_available.remove(0);
+    			dock_chosen = bookings.read_docks_final(value_type, hour_inicial, load_download);
     			
     			// If the checkbox of making a booking is selected
     			if (check_book.getValue().equals(true)) {
@@ -790,16 +812,32 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		    				BookingService.create(value_plate, value_type, value_order, load_download, day, state, hour_inicial, dock_chosen);
 		    				
 		    				// Behaviour when the booking is created
-		    				order.clear();
-		            		plate.clear();
-		            		combo_action.clear();
-		            		combo_type.clear();
-		            		hour_selection.clear();
-		            		date_selection.clear();
-		            		check_book.setEnabled(true);
-		            		check_modify.setEnabled(true);
-		            		check_book.setValue(false);
-		            		check_modify.setValue(false);
+		    				check_book.setEnabled(true);
+		    				check_book.setValue(false);
+		    	    		check_modify.setEnabled(true);
+		    	    		hour_selection.setReadOnly(true);
+		    		    	combo_action.setReadOnly(true);
+		    		    	combo_type.setReadOnly(true);
+		    		    	cancel_booking.setEnabled(false);
+		    		    	cancel_booking.setVisible(false);
+		    		    	check_info.setEnabled(false);
+		    		    	date_selection.setReadOnly(true);
+		    		    	plate.setReadOnly(true);
+		    		    	order.setReadOnly(true);
+		    		    	check.setEnabled(false);
+		    		    	check.setVisible(false);
+		    		    	cancel.setEnabled(false);
+		    		    	check_hours_modify.setVisible(false);
+		    		    	check_hours.setEnabled(false);
+		    		    	check_hours.setVisible(true);
+		    		    	
+		    		    	hour_selection.clear();
+		    		    	plate.clear();
+		    		    	order.clear();
+		    		    	combo_action.clear();
+		    		    	combo_type.clear();
+		    		    	
+		    		    	date_selection.clear();
 		            		
 		            		// Show notification of correct booking		        		
 		            		try {
@@ -834,17 +872,31 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     				BookingService.update(value_plate, value_type, value_order, load_download, day, hour_inicial, dock_chosen);
     				
     				// behaviour when the modification is done
-    				order.clear();
-            		plate.clear();
-            		check_book.setEnabled(true);
-            		check_modify.setEnabled(true);
-            		check_book.setValue(false);
-            		check_modify.setValue(false);
-            		combo_action.clear();
-            		combo_type.clear();
-            		hour_selection.clear();
-            		date_selection.clear();
-            		order.setReadOnly(true);
+    				check_book.setEnabled(true);
+    	    		check_modify.setEnabled(true);
+    	    		hour_selection.setReadOnly(true);
+    		    	combo_action.setReadOnly(true);
+    		    	combo_type.setReadOnly(true);
+    		    	cancel_booking.setEnabled(false);
+    		    	cancel_booking.setVisible(false);
+    		    	check_info.setEnabled(false);
+    		    	date_selection.setReadOnly(true);
+    		    	plate.setReadOnly(true);
+    		    	order.setReadOnly(true);
+    		    	check.setEnabled(false);
+    		    	check.setVisible(false);
+    		    	cancel.setEnabled(false);
+    		    	check_hours_modify.setVisible(false);
+    		    	check_modify.setValue(false);
+    		    	check_hours.setEnabled(false);
+    		    	check_hours.setVisible(true);
+    		    	
+    		    	hour_selection.clear();
+    		    	plate.clear();
+    		    	order.clear();
+    		    	combo_action.clear();
+    		    	combo_type.clear();
+    		    	date_selection.clear();
         			
         			// Show notification of correct modification
             		try {
@@ -922,6 +974,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     					// Behaviour when the delete is done
     					order.clear();
                 		plate.clear();
+                		check_hours.setVisible(true);
                 		check_book.setEnabled(true);
                 		check_modify.setEnabled(true);
                 		check_book.setValue(false);
@@ -1029,7 +1082,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 			check_info.setText(DictionaryManager.translateField("booking.design.checkBookBtn"));
 			cancel_booking.setText(DictionaryManager.translateField("booking.design.cancelBookBtn"));
 			cancel.setText(DictionaryManager.translateField("booking.btnCancel"));
-			navAdminLbl.setText(DictionaryManager.translateField("booking.btnCancel"));
+			navAdminLbl.setText(DictionaryManager.translateField("booking.design.navAdminLbl"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

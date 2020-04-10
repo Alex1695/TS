@@ -585,6 +585,58 @@ public class BookingService implements CRUD{
 //	return false;
 //}
 //
+	public int read_docks_final (int type, String hour, int action) {
+		String range = "";
+		int final_dock = 0;
+		int dock = 0;
+		List<Integer> docks_final = new ArrayList<>();
+		
+		ResultSet result_docks = null;
+		Statement state_docks = null;
+		
+		Connection conn = BBDD_Conection.getConexionInstance();
+	
+		////////ACTUALIZACIÓN TABLA MUELLES
+		    
+	    if (hour.equals("06:00")) {
+	    	range = "range_6";
+	    } else if(hour.equals("07:00")) {
+	    	 range = "range_7";
+	    } else if(hour.equals("08:00")) {
+	    	 range = "range_8";
+	    }else if(hour.equals("09:00")) {
+	    	 range = "range_9";
+	    }else if(hour.equals("10:00")) {
+	    	 range = "range_10";
+	    } else if(hour.equals("11:00")) {
+	    	 range = "range_11";
+	    } else if(hour.equals("12:00")) {
+	    	 range = "range_12";
+	    } else if(hour.equals("13:00")) {
+	    	 range = "range_13";
+	    }
+		
+		try {
+			
+			state_docks = (Statement) conn.createStatement();
+			
+		    String query = "SELECT id FROM DES_TS.TB_docks where truckType = " + type + " and " + range + "= " + action + ";";
+		        
+		    result_docks = state_docks.executeQuery(query);
+			
+			while (result_docks.next()) {
+				
+				dock = result_docks.getInt("id");
+				docks_final.add(dock);
+			} 
+			
+		} catch(Exception e) {
+			System.out.println(e); 
+		} 
+		final_dock = docks_final.get(0);
+		return final_dock;
+		
+	}
 
 	//modificado de pedido
 	public static boolean update(String truckPlate, int truckType, int order_request, int loadDownload, LocalDate dia, String hour, int dock){
