@@ -27,6 +27,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ import com.ts.app.views.utils.DictionaryManager;
 import com.ts.app.views.utils.Notifications;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
+import com.vaadin.flow.component.html.H1;
 
 @Route(value = "reserva" /*, layout = MainView.class*/)
 @RouteAlias(value = "" /*, layout = MainView.class*/)
@@ -108,8 +110,28 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private Checkbox check_spanish;
 	@Id("check_english")
 	private Checkbox check_english;
+	@Id("h1")
+	private H1 h1;
+	@Id("doQuestionLbl")
+	private Label doQuestionLbl;
+	@Id("selectLangLbl")
+	private Label selectLanLbl;
+	@Id("selectLangLbl")
+	private Label selectLangLbl;
+	@Id("plateLbl")
+	private Label plateLbl;
+	@Id("actionLbl")
+	private Label actionLbl;
+	@Id("truckTypeLbl")
+	private Label truckTypeLbl;
+	@Id("dateLbl")
+	private Label dateLbl;
+	@Id("hourLbl")
+	private Label hourLbl;
+	@Id("navAdminLbl")
+	private Label navAdminLbl;
 
-    public ReservaView() {
+    public ReservaView() throws UnsupportedEncodingException {
     	
     	init();
     	
@@ -144,8 +166,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	check_hours.setEnabled(false);
     	
     	// Create the buttons
-    	Button reserve_modify = new Button("Reservar");
-    	Button close = new Button("Cerrar");
+    	Button reserve_modify = new Button(DictionaryManager.translateField("booking.btnBook"));
+    	Button close = new Button(DictionaryManager.translateField("booking.btnClose"));
     	
     	// Set width and themes of the buttons
     	close.setWidth("150px");
@@ -174,7 +196,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			cancel.setEnabled(true);
     			check_info.setEnabled(true);
     			check_hours.setEnabled(true);
-    			reserve_modify.setText("Reservar");
+    			try {
+					reserve_modify.setText(DictionaryManager.translateField("booking.btnBook"));
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     			
     		}
     		
@@ -217,7 +244,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     			order.setReadOnly(false);
     			check.setVisible(true);
     			check.setEnabled(true);
-    			reserve_modify.setText("Modificar");
+    			try {
+					reserve_modify.setText(DictionaryManager.translateField("booking.checkModify"));
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     			
     		}
     		
@@ -295,7 +327,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		if (data.getOldAction() == 0) {
     		
     		} else if (data.getAction() != data.getOldAction()) {
-    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.changesNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     			hour_selection.clear();
     		}
     	});
@@ -303,7 +340,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		if (data.getOldType() == 0) {
     			
     		}else if (data.getType() != data.getOldType()) {
-    			Notifications.customNotify("Se ha cambiado la acción o el tipo de camión. Debe escoger una hora para la reserva!", 3000, "green");
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.changesNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     			hour_selection.clear();
     		}
     	});
@@ -394,7 +436,13 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		// If the data is missing
     		if (value_type == 0 || load_download == 0 || plate.equals("")) {
     			// Show notification of correct modification
-        		Notifications.customNotify("Faltan el dato del tipo de camión, si es carga/descarga o la matrícula!", 3000, "green");
+        		
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.missingDataNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
@@ -455,7 +503,12 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		// If the data is missing
     		if (value_type == 0 || load_download == 0 || plate.equals("")) {
     			// Show notification of correct modification
-        		Notifications.customNotify("Faltan el dato del tipo de camión, si es carga/descarga o la matrícula!", 3000, "green");
+        		try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.missingDataNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		} else {
 	    		// Obtain the data of the docks
 	    		List<dock> docks = bookings.read_docks(data.getType());
@@ -584,12 +637,22 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	        		check_hours_modify.setEnabled(false);
 	        		
 					// Show notification of booking incorrect
-	    			Notifications.customNotify("Este pedido no tiene una reserva asociada!", 3000, "green");
+	    			try {
+						Notifications.customNotify(DictionaryManager.translateField("booking.failNotify"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 
     			}
     		} else {
     			// Show notification of booking incorrect
-    			Notifications.customNotify("Pedido no válido!", 3000, "green");
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.invalidOrderNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
     	});
 
@@ -642,21 +705,28 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     		if (value_order == 0  || hour == null || value_type == null || load_download.equals(null) || day.equals(null) || value_plate.equals(null)) {
 
 				// Show notification of booking incorrect
-    			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.missingInvalidNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 
     		} else {
 	    		// Create a new dialog
 	    		check_information = new Dialog();
 	    		
 	        	// Create the labels to show data
-    			Label title = new Label("Los datos del pedido son: ");
-	        	Label info_order = new Label("- El pedido es: " +  Integer.toString(data.getOrder()));
-	        	Label info_plate = new Label("- La matrícula del camión es: " + data.getPlate());
-	        	Label info_action = new Label("- La acción requerida es: " + combo_action.getValue());
-	        	Label info_type = new Label("- El camión es un: " + combo_type.getValue());
-	        	Label info_date = new Label("- El día de la reserva es el: " + date_selection.getValue());
-	        	Label info_hour = new Label("- La hora reservada es: " + hour_selection.getValue());
-	    		
+    			Label title;
+				try {
+					title = new Label(DictionaryManager.translateField("booking.orderInfoLabel"));
+		        	Label info_order = new Label(DictionaryManager.translateField("booking.orderLabel") +  Integer.toString(data.getOrder()));
+		        	Label info_plate = new Label(DictionaryManager.translateField("booking.plateLabel") + data.getPlate());
+		        	Label info_action = new Label(DictionaryManager.translateField("booking.actionLabel") + combo_action.getValue());
+		        	Label info_type = new Label(DictionaryManager.translateField("booking.typeLabel") + combo_type.getValue());
+		        	Label info_date = new Label(DictionaryManager.translateField("booking.dateLabel") + date_selection.getValue());
+		        	Label info_hour = new Label(DictionaryManager.translateField("booking.hourLabel") + hour_selection.getValue());
+				
 	        	// Creation of the layouts
 	        	VerticalLayout vertical_check_information = new VerticalLayout();
 	        	HorizontalLayout horizontal_botons_check_information = new HorizontalLayout();
@@ -665,11 +735,14 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	        	horizontal_botons_check_information.add(close, reserve_modify);
 	        	vertical_check_information.add(title, info_order, info_plate, info_action, info_type, info_date, info_hour);
 	        	 
-	        	check_information.add(vertical_check_information, horizontal_botons_check_information);
-			      
+	        	check_information.add(vertical_check_information, horizontal_botons_check_information); 
 	        	// Open the window
 	    		check_information.open();
-		    		
+	    		
+				} catch (UnsupportedEncodingException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} 
 	    	}
     		
     		// Behaviour of the button
@@ -729,15 +802,30 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		            		check_modify.setValue(false);
 		            		
 		            		// Show notification of correct booking		        		
-		            		Notifications.customNotify("Reserva realizada!", 3000, "green");
+		            		try {
+								Notifications.customNotify(DictionaryManager.translateField("booking.succesNotify"), 3000, "green");
+							} catch (UnsupportedEncodingException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 		            		
 	    				} else {
 	    					// Show notification of booking incorrect
-	    	    			Notifications.customNotify("Pedido no válido!", 3000, "green");
+	    	    			try {
+								Notifications.customNotify(DictionaryManager.translateField("booking.invalidOrderNotify"), 3000, "green");
+							} catch (UnsupportedEncodingException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}  
 	    				}
     				} else {
     					// Show notification of used ordered
-    	    			Notifications.customNotify("No se puede realizar la reserva. Ya se ha realizado una reserva con ese pedido!", 3000, "green");
+    	    			try {
+							Notifications.customNotify(DictionaryManager.translateField("booking.orderAlreadyBooked"), 3000, "green");
+						} catch (UnsupportedEncodingException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 		    	}
 	    		
 	    		// If the checkbox of modify is selected
@@ -759,14 +847,29 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
             		order.setReadOnly(true);
         			
         			// Show notification of correct modification
-            		Notifications.customNotify("Modificación realizada!", 3000, "green");
+            		try {
+						Notifications.customNotify(DictionaryManager.translateField("booking.succesModifyNotify"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
     			} else {
     				// Show notification of booking incorrect
-	    			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
+	    			try {
+						Notifications.customNotify(DictionaryManager.translateField("booking.missingInvalidNotify"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 	    		}
     		} else {
     			// Show notification of booking incorrect
-    			Notifications.customNotify("Faltan datos o son incorrectos!", 3000, "green");
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("booking.missingInvalidNotify"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		check_information.close();
     	});
@@ -830,15 +933,15 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
                 		order.setReadOnly(true);
     		    		
     		    		// Show notification when delete is correct
-    		    		Notifications.customNotify("Reserva eliminada", 3000, "green");
+    		    		Notifications.customNotify(DictionaryManager.translateField("booking.deleteNotify"), 3000, "green");
     				} else {
     					// Show notification of wrong order
-    	    			Notifications.customNotify("Pedido no válido!", 3000, "green");
+    	    			Notifications.customNotify(DictionaryManager.translateField("booking.invalidOrderNotify"), 3000, "green");
     		    	}
 
         		} else {
         			// Show notification when a book cant be cancelled
-        			Notifications.customNotify("No se puede cancelar la reserva", 3000, "green");
+        			Notifications.customNotify(DictionaryManager.translateField("booking.imposibleCancelBook"), 3000, "green");
         		}
     		} catch (Exception e1) {
     			e1.printStackTrace();
@@ -853,38 +956,48 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
     	
     	// Selection of spanish
     	check_spanish.addClickListener(e -> {
-    		// Behaviuor when spanish is selected
-    		if (check_spanish.getValue().equals(true)) {
+    		// Behaviuor when spanish is selected or no one because we deselect spanish
+    		if (check_spanish.getValue().equals(true) || (check_spanish.getValue().equals(false) && check_english.getValue().equals(false))) {
     			check_english.setValue(false);
+    			check_spanish.setValue(true);
+    			try {
+					DictionaryManager.setLanguage("lang_ES");
+					refreshDesignLanguage();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		
-    		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
-    			check_spanish.setValue(true);
-    		}
+//    		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
+//    			check_spanish.setValue(true);
+//    		}
     	});
     	
     	// Selection of english
     	check_english.addClickListener(e -> {
-    		// Behaviuor when english is selected
-    		if (check_english.getValue().equals(true)) {
+    		// Behaviuor when english is selected or no one because we deselect english
+    		if (check_english.getValue().equals(true) || (check_spanish.getValue().equals(false) && check_english.getValue().equals(false))) {
     			check_spanish.setValue(false);
+    			check_english.setValue(true);
     			try {
 					DictionaryManager.setLanguage("lang_EN");
+					refreshDesignLanguage();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
     		}
     		
-    		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
-    			check_english.setValue(true);
-    			try {
-					DictionaryManager.setLanguage("lang_ES");
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-    		}
+//    		if (check_spanish.getValue().equals(false) && check_english.getValue().equals(false)) {
+//    			check_english.setValue(true);
+//    			try {
+//					DictionaryManager.setLanguage("lang_ES");
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//    		}
     	});
     }
 
@@ -892,9 +1005,36 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 		//cargamos el diccionario de la app
     	try {
 			DictionaryManager.setLanguage("lang_ES");
+			refreshDesignLanguage();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
+	
+	private void refreshDesignLanguage() {
+		//DictionaryManager.translateField("booking.checkModify")
+		try {
+			h1.setText(DictionaryManager.translateField("booking.design.h1"));
+			check_book.setLabel(DictionaryManager.translateField("booking.design.checkBook"));
+			check_modify.setLabel(DictionaryManager.translateField("booking.design.modifyBook"));
+			doQuestionLbl.setText(DictionaryManager.translateField("booking.design.doLbl"));
+			selectLangLbl.setText(DictionaryManager.translateField("booking.design.selLanLabel"));
+			plateLbl.setText(DictionaryManager.translateField("booking.design.plateLabel"));
+			actionLbl.setText(DictionaryManager.translateField("booking.design.actionLabel"));
+			truckTypeLbl.setText(DictionaryManager.translateField("booking.design.truckTypeLabel"));
+			dateLbl.setText(DictionaryManager.translateField("booking.design.dateLabel"));
+			hourLbl.setText(DictionaryManager.translateField("booking.design.hourLabel"));
+			
+			check_info.setText(DictionaryManager.translateField("booking.design.checkBookBtn"));
+			cancel_booking.setText(DictionaryManager.translateField("booking.design.cancelBookBtn"));
+			cancel.setText(DictionaryManager.translateField("booking.btnCancel"));
+			navAdminLbl.setText(DictionaryManager.translateField("booking.btnCancel"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+	}
+	
+	
 }

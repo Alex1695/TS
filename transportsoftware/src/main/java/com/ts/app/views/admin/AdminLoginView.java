@@ -49,13 +49,23 @@ public class AdminLoginView extends FlexLayout {
 		component.addLoginListener(e -> {
 		    boolean isAuthenticated = authenticate(e);
 		    if (isAuthenticated) {
-		    	Notifications.customNotify("Bienvenido "+e.getUsername(), 
-		    			Notifications.DEFAULTDURATION,Notifications.SUCCESSCOLOR);
+		    	try {
+					Notifications.customNotify(DictionaryManager.translateField("adminView.welcomeNotify")+e.getUsername(), 
+							Notifications.DEFAULTDURATION,Notifications.SUCCESSCOLOR);
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		        navigateToMainPage(e);
 		        
 		    } else {
-		    	Notifications.customNotify("ERROR. Usuario o contraseña incorrectas.", 
-		    			Notifications.DEFAULTDURATION,Notifications.ERRORCOLOR );
+		    	try {
+					Notifications.customNotify(DictionaryManager.translateField("adminView.invalidLoginNotify"), 
+							Notifications.DEFAULTDURATION,Notifications.ERRORCOLOR );
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		        component.setError(true);
 		    }
 		});
