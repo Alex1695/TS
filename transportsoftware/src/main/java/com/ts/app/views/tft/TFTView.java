@@ -170,6 +170,7 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     		}
     		
     		else {		
+    			
     			data.setPlate(value_plate);
     				
     			if(data.getPlate() == "") {
@@ -178,54 +179,47 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     			}
     			
     			else {
-    					
-    				if(hour_selected == "") {
-    					notification_plate_null.open();
-    				}
-    					
-    				else {
     				
-	    				SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-						Date d = null;
-						try {
-							d = df.parse(hour_selected);
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} 
-						Calendar cal = Calendar.getInstance();
-						cal.setTime(d);
-						cal.add(Calendar.MINUTE, 10);
-						
-						SimpleDateFormat df2 = new SimpleDateFormat("HH:mm");
-						Date d2 = null;
-						try {
-							d2 = df2.parse(entrance_hour);
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} 
-						Calendar cal2 = Calendar.getInstance();
-						cal2.setTime(d2);
-						
-						
-						long inicio = cal.getTimeInMillis();
-						long actual = cal2.getTimeInMillis();
-	
-						if ((actual > inicio))
-						{
-							notification_booking_late.open();
-							bookings.delete_booking(value_plate, hour_selected);
-						}
-						else
-						{
-		    				List<booking> books = bookings.search_plate(value_plate, entrance_hour, hour_selected);
-		    				data.setBooks(books);
-		    				grid_trucks.setItems(books);
-		    				notification_plate_enter.open();
-						}
-    				}
-    			}	
+    				SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+					Date d = null;
+					try {
+						d = df.parse(hour_selected);
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} 
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(d);
+					cal.add(Calendar.MINUTE, 10);
+					
+					SimpleDateFormat df2 = new SimpleDateFormat("HH:mm");
+					Date d2 = null;
+					try {
+						d2 = df2.parse(entrance_hour);
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} 
+					Calendar cal2 = Calendar.getInstance();
+					cal2.setTime(d2);
+					
+					
+					long inicio = cal.getTimeInMillis();
+					long actual = cal2.getTimeInMillis();
+
+					if ((actual > inicio))
+					{
+						notification_booking_late.open();
+						bookings.delete_booking(value_plate, hour_selected);
+					}
+					else
+					{
+	    				List<booking> books = bookings.search_plate(value_plate, entrance_hour, hour_selected);
+	    				data.setBooks(books);
+	    				grid_trucks.setItems(books);
+	    				notification_plate_enter.open();
+					}
+				}
 			}
     			
     		text_entrance.clear();
@@ -239,11 +233,11 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     	// comienzo de la funcion del boton de salida
     	button_exit.addClickListener(e -> {
     		
-    		String value_plate2 = data.getPlate().toUpperCase();
+    		String value_plate2 = text_exit.getValue().toUpperCase();
     		String hour_selected = "";
     		String truck_plate = "";
     		String newTime = "";
-    		int index = 0;
+    		
     		List<booking> books = data.getBooks();
     		
     		if (value_plate2.equals("")) {    
@@ -253,135 +247,184 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     		
     		else {
     			
-    			//data.setPlate(value_plate2);
-    			
+    			data.setPlate(value_plate2);
+				
     			if(data.getPlate() == "") {
     				
     				notification_plate_wrong.open();
     			}
     			
-    			else {	
-    				//for(booking element : books) {
-    				for (int i = 0; i<books.size(); i++) {	
-    					truck_plate = books.get(i).getTruckPlate();
-
-    					if(truck_plate.contains(value_plate2) == false) {
-    						notification_plate_null.open();			
-    					} else if (truck_plate.contains(value_plate2) == true){
-    						
-    				
-    						hour_selected = books.get(i).getHour();
-    						int type = books.get(i).getTruckType();
-    						int loadDownload = books.get(i).getLoadDownload();
-    						String hour = books.get(i).getHour();
-    						
-    						
-    						// 1. furgoneta, carga = 20m, descarga = 15m
-    						if (type == 1) {
-    							if (loadDownload == 1) {
-    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-    								Date d = null;
-									try {
-										d = df.parse(hour);
-									} catch (ParseException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
+    			else {
+    			
+					if(books == null) {
+						
+						notification_plate_null.open();
+					}
+					
+					else {	
+						
+						for (int i = 0; i<books.size(); i++) {	
+							
+							truck_plate = books.get(i).getTruckPlate();
+		
+							if(truck_plate.contains(value_plate2) == false) {
+								
+								notification_plate_null.open();			
+							} 
+							
+							else if (truck_plate.contains(value_plate2) == true){
+								
+								hour_selected = books.get(i).getHour();
+								int type = books.get(i).getTruckType();
+								int loadDownload = books.get(i).getLoadDownload();
+								String hour = books.get(i).getHour();
+								
+								
+								// 1. furgoneta, carga = 20m, descarga = 15m
+								if (type == 1) {
+									
+									if (loadDownload == 1) {
 										
-									} 
-    	    						Calendar cal = Calendar.getInstance();
-    	    						cal.setTime(d);
-    	    						cal.add(Calendar.MINUTE, 20);
-    	    						newTime = df.format(cal.getTime());
-    							}
-    							else {
-    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-    								Date d = null;
-									try {
-										d = df.parse(hour);
-									} catch (ParseException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} 
-    	    						Calendar cal = Calendar.getInstance();
-    	    						cal.setTime(d);
-    	    						cal.add(Calendar.MINUTE, 15);
-    	    						newTime = df.format(cal.getTime());
-    							}
-    						}
-    						
-    						// 2. lona, carga = 40m, descarga = 30m
-    						else if (type == 2) {
-    							if (loadDownload == 1) {
-    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-    								Date d = null;
-									try {
-										d = df.parse(hour);
-									} catch (ParseException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} 
-    	    						Calendar cal = Calendar.getInstance();
-    	    						cal.setTime(d);
-    	    						cal.add(Calendar.MINUTE, 40);
-    	    						newTime = df.format(cal.getTime());
-    							}
-    							else {
-    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-    	    						Date d = null;
-									try {
-										d = df.parse(hour);
-									} catch (ParseException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} 
-    	    						Calendar cal = Calendar.getInstance();
-    	    						cal.setTime(d);
-    	    						cal.add(Calendar.MINUTE, 30);
-    	    						newTime = df.format(cal.getTime());
-    							}
-    						}
-    						
-    						// 3. trailer, carga = 60m, descarga = 45m
-    						else if (type == 3) {
-    							if (loadDownload == 1) {
-    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-    								Date d = null;
-									try {
-										d = df.parse(hour);
-									} catch (ParseException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} 
-    	    						Calendar cal = Calendar.getInstance();
-    	    						cal.setTime(d);
-    	    						cal.add(Calendar.MINUTE, 60);
-    	    						newTime = df.format(cal.getTime());
-    							}
-    							else {
-    								SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-    								Date d = null;
-									try {
-										d = df.parse(hour);
-									} catch (ParseException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} 
-    	    						Calendar cal = Calendar.getInstance();
-    	    						cal.setTime(d);
-    	    						cal.add(Calendar.MINUTE, 45);
-    	    						newTime = df.format(cal.getTime());
-    							}
-    						}
-    						bookings.book_done(value_plate2, 0, newTime, hour_selected);
-    						
-    						books.remove(i);
-    						data.setBooks(books);
-    						
-    						grid_trucks.setItems(books);
-    					}
-    				}
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+										Date d = null;
+										
+										try {
+											d = df.parse(hour);
+										}
+										
+										catch (ParseException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} 
+										
+			    						Calendar cal = Calendar.getInstance();
+			    						cal.setTime(d);
+			    						cal.add(Calendar.MINUTE, 20);
+			    						newTime = df.format(cal.getTime());
+									}
+									
+									else {
+										
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+										Date d = null;
+										
+										try {
+											d = df.parse(hour);
+										}
+										
+										catch (ParseException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} 
+										
+			    						Calendar cal = Calendar.getInstance();
+			    						cal.setTime(d);
+			    						cal.add(Calendar.MINUTE, 15);
+			    						newTime = df.format(cal.getTime());
+									}
+								}
+								
+								// 2. lona, carga = 40m, descarga = 30m
+								else if (type == 2) {
+									
+									if (loadDownload == 1) {
+										
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+										Date d = null;
+										
+										try {
+											d = df.parse(hour);
+										} 
+										
+										catch (ParseException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} 
+										
+			    						Calendar cal = Calendar.getInstance();
+			    						cal.setTime(d);
+			    						cal.add(Calendar.MINUTE, 40);
+			    						newTime = df.format(cal.getTime());
+									}
+									
+									else {
+										
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+			    						Date d = null;
+			    						
+										try {
+											d = df.parse(hour);
+										}
+										
+										catch (ParseException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} 
+										
+			    						Calendar cal = Calendar.getInstance();
+			    						cal.setTime(d);
+			    						cal.add(Calendar.MINUTE, 30);
+			    						newTime = df.format(cal.getTime());
+									}
+								}
+								
+								// 3. trailer, carga = 60m, descarga = 45m
+								else if (type == 3) {
+									
+									if (loadDownload == 1) {
+										
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+										Date d = null;
+										
+										try {
+											d = df.parse(hour);
+										} 
+										
+										catch (ParseException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} 
+										
+			    						Calendar cal = Calendar.getInstance();
+			    						cal.setTime(d);
+			    						cal.add(Calendar.MINUTE, 60);
+			    						newTime = df.format(cal.getTime());
+									}
+									
+									else {
+										
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+										Date d = null;
+										
+										try {
+											d = df.parse(hour);
+										} 
+										
+										catch (ParseException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} 
+										
+			    						Calendar cal = Calendar.getInstance();
+			    						cal.setTime(d);
+			    						cal.add(Calendar.MINUTE, 45);
+			    						newTime = df.format(cal.getTime());
+									}
+								}
+								
+								bookings.book_done(value_plate2, 0, newTime, hour_selected);
+								
+								books.remove(i);
+								data.setBooks(books);
+								
+								grid_trucks.setItems(books);
+								
+								notification_plate_exit.open();
+							}
+						}
+					}
     			}
-    			notification_plate_exit.open();
+    			
     			text_exit.clear();
     		}
     	});
@@ -391,6 +434,7 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     	// comienzo de la funcion del boton de busqueda de las horas de reserva
     	search_button.addClickListener(e -> {
     		
+    		boolean encontrado = false;
     		List<booking> books = bookings.read();
     		List<String> hours = new ArrayList<>();
     		String value_plate = text_entrance.getValue().toUpperCase();
@@ -399,9 +443,14 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 	
     		for (booking element : books) {
     			if (element.getTruckPlate().contains(value_plate) == true) {
-	
+    				
+    				encontrado = true;
     				hours.add(element.getHour());
     			}
+    		}
+    		
+    		if(encontrado == false) {
+    			notification_plate_null.open();
     		}
 
     		combo_hours.setItems(hours);
