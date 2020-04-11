@@ -131,6 +131,8 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	private Label hourLbl;
 	@Id("navAdminLbl")
 	private Label navAdminLbl;
+	@Id("orderLbl")
+	private Label orderLbl;
 
     public ReservaView() throws UnsupportedEncodingException {
     	
@@ -1078,6 +1080,7 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 			truckTypeLbl.setText(DictionaryManager.translateField("booking.design.truckTypeLabel"));
 			dateLbl.setText(DictionaryManager.translateField("booking.design.dateLabel"));
 			hourLbl.setText(DictionaryManager.translateField("booking.design.hourLabel"));
+			orderLbl.setText(DictionaryManager.translateField("booking.desing.orderLabel"));
 			
 			check_info.setText(DictionaryManager.translateField("booking.design.checkBookBtn"));
 			cancel_booking.setText(DictionaryManager.translateField("booking.design.cancelBookBtn"));
