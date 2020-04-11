@@ -92,7 +92,6 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 
 	@Id("h2")
 	private H2 h1;
-
 	
 	// comienzo de la estructura de la aplicacion
     public TFTView() throws UnsupportedEncodingException {
@@ -101,14 +100,27 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     	
     	BookingService bookings = new BookingService();
     	Obtain_booking_data data = new Obtain_booking_data();
+
+    	Label orderLbl = new Label(); 
+    	Label plateLbl = new Label();
+    	Label dockLbl = new Label();
+    	Label hourLbl = new Label();
+    	Label actionLbl = new Label();
+    	Label typeLbl = new Label();
     	
-    	grid_trucks.addColumn(booking::getOrder_request).setHeader("Pedido/Order").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getTruckPlate).setHeader("Matrícula/Plate").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getDock).setHeader("Muelle/Dock").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getHour).setHeader("Hora/Hour").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getLoadDownload).setHeader("Acción/Action").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getTruckType).setHeader("Tipo/Type").setAutoWidth(true);
- 
+    	orderLbl.setText(DictionaryManager.translateField("tft.design.orderLabel"));
+    	plateLbl.setText(DictionaryManager.translateField("tft.design.plateLabel"));
+    	dockLbl.setText(DictionaryManager.translateField("tft.design.dockLabel"));
+    	hourLbl.setText(DictionaryManager.translateField("tft.design.hourLabel"));
+    	actionLbl.setText(DictionaryManager.translateField("tft.design.actionLabel"));
+    	typeLbl.setText(DictionaryManager.translateField("tft.design.typeLabel"));
+    	
+    	grid_trucks.addColumn(booking::getOrder_request).setHeader(orderLbl).setAutoWidth(true);
+		grid_trucks.addColumn(booking::getTruckPlate).setHeader(plateLbl).setAutoWidth(true);
+		grid_trucks.addColumn(booking::getDock).setHeader(dockLbl).setAutoWidth(true);
+		grid_trucks.addColumn(booking::getHour).setHeader(hourLbl).setAutoWidth(true);
+		grid_trucks.addColumn(booking::getLoadDownload).setHeader(actionLbl).setAutoWidth(true);
+		grid_trucks.addColumn(booking::getTruckType).setHeader(typeLbl).setAutoWidth(true);
     	
 		grid_trucks.setWidth("930px");
 		grid_trucks.setHeight("300px");
@@ -504,7 +516,7 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 			text_exit.setLabel(DictionaryManager.translateField("tft.design.textExit"));
 			button_exit.setText(DictionaryManager.translateField("tft.design.buttonExit"));
 			text_hour_entrance.setPlaceholder(DictionaryManager.translateField("tft.design.Placeholder"));
-			
+	    	
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
