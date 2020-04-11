@@ -29,7 +29,7 @@ public class DockService {
 		    // Write the query to execute
 		    String query = " INSERT INTO TB_docks (id, truckType, range_6, range_7, range_8, range_9, range_10, range_11, range_12, range_13) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		    		    
-		    
+		    int limit=0;
 		    for(String[] dock: listDocks) {
 		    	
 		    	try {
@@ -49,7 +49,12 @@ public class DockService {
 				    // execute the preparedstatement
 				    preparedStmt.execute();
 				    
-			
+				    limit++;
+				    //500 dock limit
+				    if(limit >= 500) {
+				    	return true;
+				    }
+				    
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
