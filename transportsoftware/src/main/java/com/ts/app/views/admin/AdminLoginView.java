@@ -2,22 +2,17 @@ package com.ts.app.views.admin;
 
 import com.vaadin.flow.component.login.AbstractLogin.LoginEvent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
 import java.io.UnsupportedEncodingException;
 
-import com.ts.app.MainView;
 import com.ts.app.views.utils.DictionaryManager;
 import com.ts.app.views.utils.Notifications;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 
@@ -38,7 +33,6 @@ public class AdminLoginView extends FlexLayout {
 	 */
 	public AdminLoginView() throws UnsupportedEncodingException{
 		
-		//LoginForm component = new LoginForm();
 		component = new LoginOverlay();
 		component.setTitle("SGM - DHL");
 		component.setDescription(DictionaryManager.translateField("adminlogin.description"));
@@ -81,8 +75,8 @@ public class AdminLoginView extends FlexLayout {
 	 * @return
 	 */
 	private boolean authenticate(LoginEvent event) {
-		String adminUSR = "admin";
-		String passUSR = "admin";
+		String adminUSR = "admin";//FOR TEST
+		String passUSR = "admin";//FOR TEST
 		if(event.getUsername().equals(adminUSR) && event.getPassword().equals(passUSR)) {
 			return true;
 		}else {

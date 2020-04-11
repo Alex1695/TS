@@ -2,5 +2,5 @@
 <<<<<<<=Updated upstream
 >>>>>>>=Stashed changes
 eclipse.preferences.version=1
-serverAddress=192.168.1.48
+serverAddress=192.168.56.1
 serverPort=54784

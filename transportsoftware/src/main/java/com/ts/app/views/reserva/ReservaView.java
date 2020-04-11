@@ -1,13 +1,10 @@
 package com.ts.app.views.reserva;
 
 import com.ts.app.backend.booking.Obtain_booking_data;
-import com.ts.app.backend.controller.CsvReader;
 import com.ts.app.backend.model.booking;
 import com.ts.app.backend.model.dock;
 import com.ts.app.backend.service.BookingService;
-import com.ts.app.backend.service.DockService;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -15,8 +12,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -44,8 +39,8 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 import com.vaadin.flow.component.html.H1;
 
-@Route(value = "reserva" /*, layout = MainView.class*/)
-@RouteAlias(value = "" /*, layout = MainView.class*/)
+@Route(value = "reserva")
+@RouteAlias(value = "")
 @PageTitle("Reserva")
 @JsModule("./src/views/reserva/reserva-view.js")
 @Tag("reserva-view")

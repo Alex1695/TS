@@ -32,9 +32,9 @@ public class CsvReader {
                 String[] values = line.split(cvsSplitBy);
                 listDocks.add(values);
             }
-            //Remove Header
+            //Remove CSV Header
             listDocks.remove(0);
-            System.out.println(listDocks.size());
+            //System.out.println(listDocks.size());
         return listDocks;
             
         } catch (FileNotFoundException e) {

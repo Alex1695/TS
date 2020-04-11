@@ -12,7 +12,6 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import java.io.InputStream;
 
-import com.helger.commons.csv.CSVReader;
 import com.ts.app.MainView;
 import com.ts.app.backend.controller.CsvReader;
 import com.ts.app.backend.service.StateService;
@@ -34,12 +33,8 @@ public class AdminView extends PolymerTemplate<AdminViewModel> implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
-
-  
 	@Id("h1")
 	private H1 h1;
-
 
 	@Id("vaadinVerticalLayout")
 	private VerticalLayout vaadinVerticalLayout;
@@ -56,7 +51,6 @@ public class AdminView extends PolymerTemplate<AdminViewModel> implements
     	StateService service = new StateService();//for test -> remove
     	MemoryBuffer memoryBuffer = new MemoryBuffer();
     	
-
     	Upload uploaderDocks = new Upload(memoryBuffer);
     	uploaderDocks.addFinishedListener(e -> {
     	    InputStream inputStream = memoryBuffer.getInputStream();
