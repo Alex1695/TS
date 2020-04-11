@@ -1,5 +1,7 @@
 package com.ts.app.views.tft;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -37,9 +40,12 @@ import com.ts.app.backend.booking.Obtain_booking_data;
 import com.ts.app.backend.model.booking;
 import com.ts.app.backend.service.BookingService;
 import com.ts.app.views.tft.TFTView.TFTViewModel;
+import com.ts.app.views.utils.DictionaryManager;
+import com.ts.app.views.utils.Notifications;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.H2;
 
 @Route(value = "tft", layout = MainView.class)
 @PageTitle("TFT")
@@ -84,59 +90,27 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 	@Id("combo_hours")
 	private ComboBox<String> combo_hours;
 
+	@Id("h2")
+	private H2 h1;
+
+	
 	// comienzo de la estructura de la aplicacion
-    public TFTView() {
+    public TFTView() throws UnsupportedEncodingException {
+
+    	refreshDesignLanguage();
     	
     	BookingService bookings = new BookingService();
     	Obtain_booking_data data = new Obtain_booking_data();
     	
-    	// notificaciones en pantalla 
+    	grid_trucks.addColumn(booking::getOrder_request).setHeader("Pedido/Order").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getTruckPlate).setHeader("Matrícula/Plate").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getDock).setHeader("Muelle/Dock").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getHour).setHeader("Hora/Hour").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getLoadDownload).setHeader("Acción/Action").setAutoWidth(true);
+		grid_trucks.addColumn(booking::getTruckType).setHeader("Tipo/Type").setAutoWidth(true);
+ 
     	
-    	// Creation of the notification when the plate is incorrect
-    	Label plate_wrong = new Label("Matricula incorrecta");
-    	Notification notification_plate_wrong = new Notification(plate_wrong);
-    	notification_plate_wrong.setDuration(3000);
-    	notification_plate_wrong.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when there is not plate
-    	Label not_plate = new Label("Asegurate de haber introducido todos los campos.");
-    	Notification notification_plate_not = new Notification(not_plate);
-    	notification_plate_not.setDuration(3000);
-    	notification_plate_not.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when a plate is in the booking
-    	Label plate_enter = new Label("El camión ha entrado en el muelle");
-    	Notification notification_plate_enter = new Notification(plate_enter);
-    	notification_plate_enter.setDuration(3000);
-    	notification_plate_enter.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when a booking is done
-    	Label plate_exit = new Label("El camión ha salido del muelle");
-    	Notification notification_plate_exit = new Notification(plate_exit);
-    	notification_plate_exit.setDuration(3000);
-    	notification_plate_exit.setPosition(Position.MIDDLE);
-	
-    	// Creation of the notification when a booking is null
-    	Label plate_null = new Label("La matrícula no se encuentra en la lista");
-    	Notification notification_plate_null = new Notification(plate_null);
-    	notification_plate_null.setDuration(3000);
-    	notification_plate_null.setPosition(Position.MIDDLE);
-    	
-    	// Creation of the notification when a booking is late
-    	Label booking_late = new Label("Han pasado los diez minutos de cortesía desde la reserva por lo que fue eliminada.");
-    	Notification notification_booking_late = new Notification(booking_late);
-    	notification_booking_late.setDuration(3000);
-    	notification_booking_late.setPosition(Position.MIDDLE);
-    	
-    	// estructura de la tabla de la pantalla    	
-    	grid_trucks.addColumn(booking::getOrder_request).setHeader("Order").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getTruckPlate).setHeader("Plate").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getDock).setHeader("Dock").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getHour).setHeader("Hour").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getLoadDownload).setHeader("Action").setAutoWidth(true);
-		grid_trucks.addColumn(booking::getTruckType).setHeader("Type").setAutoWidth(true);
-		
-		grid_trucks.setWidth("800px");
+		grid_trucks.setWidth("930px");
 		grid_trucks.setHeight("300px");
 		grid_trucks.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
 		grid_trucks.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
@@ -158,15 +132,30 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
   
     		
     		if (value_plate.equals("")) {    		
-    			notification_plate_not.open();
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("tft.design.missingData"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		
     		else if (entrance_hour.equals("")) {
-    			notification_plate_not.open();
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("tft.design.missingData"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		
     		else if (hour_selected == null) {
-    			notification_plate_not.open();
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("tft.design.missingData"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		
     		else {		
@@ -175,7 +164,12 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     				
     			if(data.getPlate() == "") {
     				
-    				notification_plate_wrong.open();
+    				try {
+						Notifications.customNotify(DictionaryManager.translateField("tft.design.wrongPlate"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
     			}
     			
     			else {
@@ -209,7 +203,12 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 
 					if ((actual > inicio))
 					{
-						notification_booking_late.open();
+						try {
+							Notifications.customNotify(DictionaryManager.translateField("tft.design.bookinLateLbl"), 3000, "green");
+						} catch (UnsupportedEncodingException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						bookings.delete_booking(value_plate, hour_selected);
 					}
 					else
@@ -217,7 +216,13 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 	    				List<booking> books = bookings.search_plate(value_plate, entrance_hour, hour_selected);
 	    				data.setBooks(books);
 	    				grid_trucks.setItems(books);
-	    				notification_plate_enter.open();
+
+	    				try {
+	    					Notifications.customNotify(DictionaryManager.translateField("tft.design.truckEnter"), 3000, "green");
+	    				} catch (UnsupportedEncodingException e1) {
+	    					// TODO Auto-generated catch block
+	    					e1.printStackTrace();
+	    				}
 					}
 				}
 			}
@@ -242,7 +247,12 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     		
     		if (value_plate2.equals("")) {    
     			
-    			notification_plate_not.open();
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("tft.design.missingData"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
     		
     		else {
@@ -251,14 +261,24 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 				
     			if(data.getPlate() == "") {
     				
-    				notification_plate_wrong.open();
+    				try {
+						Notifications.customNotify(DictionaryManager.translateField("tft.design.wrongPlate"), 3000, "green");
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
     			}
     			
     			else {
     			
 					if(books == null) {
 						
-						notification_plate_null.open();
+						try {
+							Notifications.customNotify(DictionaryManager.translateField("tft.design.nullPlateLbl"), 3000, "green");
+						} catch (UnsupportedEncodingException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 					
 					else {	
@@ -269,7 +289,12 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 		
 							if(truck_plate.contains(value_plate2) == false) {
 								
-								notification_plate_null.open();			
+								try {
+									Notifications.customNotify(DictionaryManager.translateField("tft.design.nullPlateLbl"), 3000, "green");
+								} catch (UnsupportedEncodingException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}		
 							} 
 							
 							else if (truck_plate.contains(value_plate2) == true){
@@ -419,7 +444,12 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
 								
 								grid_trucks.setItems(books);
 								
-								notification_plate_exit.open();
+								try {
+			    					Notifications.customNotify(DictionaryManager.translateField("tft.design.truckExit"), 3000, "green");
+			    				} catch (UnsupportedEncodingException e1) {
+			    					// TODO Auto-generated catch block
+			    					e1.printStackTrace();
+			    				}
 							}
 						}
 					}
@@ -450,11 +480,35 @@ public class TFTView extends PolymerTemplate<TFTViewModel> {
     		}
     		
     		if(encontrado == false) {
-    			notification_plate_null.open();
+    			try {
+					Notifications.customNotify(DictionaryManager.translateField("tft.design.nullPlateLbl"), 3000, "green");
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
     		}
 
     		combo_hours.setItems(hours);
     		
     	});  	
     }
+    
+    private void refreshDesignLanguage() {
+		//DictionaryManager.translateField("booking.checkModify")
+		try {
+			h1.setText(DictionaryManager.translateField("tft.design.h1"));
+			text_entrance.setLabel(DictionaryManager.translateField("tft.design.textEntrance"));
+			combo_hours.setLabel(DictionaryManager.translateField("tft.design.textComboHours"));
+			text_hour_entrance.setLabel(DictionaryManager.translateField("tft.design.textHourEntrance"));
+			button_entrance.setText(DictionaryManager.translateField("tft.design.buttonEntrance"));
+			text_exit.setLabel(DictionaryManager.translateField("tft.design.textExit"));
+			button_exit.setText(DictionaryManager.translateField("tft.design.buttonExit"));
+			text_hour_entrance.setPlaceholder(DictionaryManager.translateField("tft.design.Placeholder"));
+			
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+	}
+    
 }

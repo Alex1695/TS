@@ -128,12 +128,12 @@ public class MainView extends AppLayout {
     	}
     	
     	//cargamos el diccionario de la app
-    	try {
+    	/*try {
 			DictionaryManager.setLanguage("lang_ES");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
     }
     	
     

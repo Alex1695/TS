@@ -94,7 +94,7 @@ class TFTView extends PolymerElement {
 <vaadin-vertical-layout style="width: 100%; height: 100%;">
  <vaadin-horizontal-layout theme="spacing" style="align-self: center;">
   <vaadin-horizontal-layout theme="spacing" id="entrada">
-   <vaadin-text-field label="Introduce una matricula" placeholder="" id="text_entrance" style="align-self: center;"></vaadin-text-field>
+   <vaadin-text-field label="Introduce una matrícula" placeholder="" id="text_entrance" style="align-self: flex-end;"></vaadin-text-field>
    <vaadin-combo-box id="combo_hours" style="align-self: flex-end;" label="Selecciona la hora de reserva"></vaadin-combo-box>
    <vaadin-button theme="icon" aria-label="Add new" id="search_button" style="align-self: flex-end;">
     <iron-icon icon="lumo:search"></iron-icon>
@@ -112,7 +112,7 @@ class TFTView extends PolymerElement {
   </vaadin-horizontal-layout>
  </vaadin-horizontal-layout>
  <vaadin-horizontal-layout theme="spacing" style="align-self: center;">
-  <h2>Camiones en Muelles</h2>
+  <h2 id="h2">Camiones en Muelles</h2>
  </vaadin-horizontal-layout>
  <vaadin-horizontal-layout theme="spacing" style="align-self: center; justify-content: center;">
   <vaadin-grid id="grid_trucks" style="align-self: center;"></vaadin-grid>
