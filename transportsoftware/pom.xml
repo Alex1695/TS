@@ -135,6 +135,18 @@
                     </webAppConfig>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>com.heroku.sdk</groupId>
+				<artifactId>heroku-maven-plugin</artifactId>
+				<configuration>
+					<processTypes>
+						<web>java $JAVA_OPTS -cp target/classes:target/dependency/* Main</web>
+					</processTypes>
+					<configuration>
+		        		<appName>transport-software</appName>
+		        	</configuration>
+				</configuration>
+			</plugin>
 
             <!--
                 Take care of synchronizing java dependencies and imports in
@@ -149,18 +161,19 @@
                     <execution>
                         <goals>
                             <goal>prepare-frontend</goal>
+                            <goal>build-frontend</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-			  <groupId>com.heroku.sdk</groupId>
-				<artifactId>heroku-maven-plugin</artifactId>
-				<version>0.5.1</version>
-				<configuration>
-					<appName>${heroku.appName}</appName>
-				</configuration>
-			</plugin>
+		        <groupId>com.heroku.sdk</groupId>
+		        <artifactId>heroku-maven-plugin</artifactId>
+		        <version>3.0.2</version>
+		        <configuration>
+		        	<appName>transport-software</appName>
+		        </configuration>
+      		</plugin>
         </plugins>
         <resources>
 	        <resource>
@@ -191,36 +204,52 @@
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
             <properties>
-                <vaadin.productionMode>true</vaadin.productionMode>
-            </properties>
-
-            <dependencies>
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-server-production-mode</artifactId>
-                </dependency>
-            </dependencies>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.vaadin</groupId>
-                        <artifactId>vaadin-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build-frontend</goal>
-                                </goals>
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+            <vaadin.productionMode>true</vaadin.productionMode>
+	        </properties>
+	        <dependencies>
+	            <dependency>
+	                <groupId>com.vaadin</groupId>
+	                <artifactId>flow-server-production-mode</artifactId>
+	            </dependency>
+	        </dependencies>
+	        <build>
+	            <plugins>
+	                <plugin>
+	                    <groupId>com.vaadin</groupId>
+	                    <artifactId>vaadin-maven-plugin</artifactId>
+	                    <version>${vaadin.version}</version>
+	                    <executions>
+	                        <execution>
+	                            <goals>
+	                                <goal>prepare-frontend</goal>
+	                                <goal>build-frontend</goal>
+	                            </goals>
+	                        </execution>
+	                    </executions>
+	                </plugin>
+	            </plugins>
+	        </build>
         </profile>
-
+		<profile>
+			<id>prod</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.heroku.sdk</groupId>
+						<artifactId>heroku-maven-plugin</artifactId>
+						<configuration>
+		        			<appName>transport-software</appName>
+		       			</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
         <profile>
             <id>integration-tests</id>
+            <properties>
+            <!-- for test -->
+                <vaadin.productionMode>true</vaadin.productionMode>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
