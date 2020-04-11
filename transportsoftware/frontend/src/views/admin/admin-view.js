@@ -9,72 +9,31 @@ import "@vaadin/vaadin-text-field/vaadin-text-field.js";
 import "@vaadin/vaadin-text-field/vaadin-password-field.js";
 import "@vaadin/vaadin-button/vaadin-button.js";
 import "@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout.js";
-
-
+import '@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js';
+import '@vaadin/vaadin-upload/src/vaadin-upload-file.js';
+import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
 
 class AdminView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles">
+<style include="shared-styles">
         :host {
           display: block;
           height: 100%;
         }
       </style>
-
-      <vaadin-split-layout style="width: 100%; height: 100%;">
-        <div style="flex-grow:1;width:100%;" id="wrapper">
-          <vaadin-grid style="height:100%" theme="no-border" id="employees">
-          </vaadin-grid>
-        </div>
-        <div style="width:400px;padding:var(--lumo-space-l)">
-          <vaadin-form-layout>
-            <vaadin-form-item>
-              <label slot="label">First name</label>
-              <vaadin-text-field
-                class="full-width"
-                value=""
-                id="firstname"
-              ></vaadin-text-field>
-            </vaadin-form-item>
-            <vaadin-form-item>
-              <label slot="label">Last name</label>
-              <vaadin-text-field
-                class="full-width"
-                value=""
-                id="lastname"
-              ></vaadin-text-field>
-            </vaadin-form-item>
-            <vaadin-form-item>
-              <label slot="label">Email</label>
-              <vaadin-text-field
-                class="full-width"
-                value=""
-                id="email"
-              ></vaadin-text-field>
-            </vaadin-form-item>
-            <vaadin-form-item>
-              <label slot="label">Password</label>
-              <vaadin-password-field 
-                class="full-width"
-                id="password"
-                ></vaadin-password-field>
-            </vaadin-form-item>
-          </vaadin-form-layout>
-          <vaadin-horizontal-layout
-            style="display:flex;flex-wrap:wrap-reverse;width:100%;justify-content:flex-end;"
-            theme="spacing"
-          >
-            <vaadin-button theme="tertiary" slot="" id="cancel">
-              Cancel
-            </vaadin-button>
-            <vaadin-button theme="primary" id="save">
-              Save
-            </vaadin-button>
-          </vaadin-horizontal-layout>
-        </div>
-      </vaadin-split-layout>
-    `;
+<vaadin-vertical-layout style="width: 100%; height: 100%;" id="vaadinVerticalLayout">
+ <h1 id="h1">Panel de administración</h1>
+ <vaadin-horizontal-layout theme="margin" style="width: 100%; height: auto;">
+  <vaadin-vertical-layout theme="margin" id="verticalLayoutUploadDocks" style="width: 50%;">
+   <h4>Carga de Muelles</h4>
+  </vaadin-vertical-layout>
+  <vaadin-vertical-layout theme="margin" id="verticalLayoutUploadOrders" style="width: 50%;">
+   <h4>Carga de pedidos</h4>
+  </vaadin-vertical-layout>
+ </vaadin-horizontal-layout>
+</vaadin-vertical-layout>
+`;
   }
 
 

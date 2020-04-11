@@ -1,0 +1,15 @@
+
+
+
+
+.hide{ 
+	display: none !important;
+	
+	}
+	
+	
+.show{
+	color:red;
+	width:1px;
+	display: block !important;
+	}

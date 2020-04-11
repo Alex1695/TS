@@ -104,6 +104,11 @@
             <artifactId>vaadin-testbench</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>mysql</groupId>
+        	<artifactId>mysql-connector-java</artifactId>
+        	<version>5.1.44</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -148,7 +153,37 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+			  <groupId>com.heroku.sdk</groupId>
+				<artifactId>heroku-maven-plugin</artifactId>
+				<version>0.5.1</version>
+				<configuration>
+					<appName>${heroku.appName}</appName>
+				</configuration>
+			</plugin>
         </plugins>
+        <resources>
+	        <resource>
+	            <directory>${project.basedir}/src/main/resources</directory>
+	            <filtering>true</filtering>
+	            <includes>
+	                <include>*.xml</include>
+	                <include>*.config</include>
+	                <include>*.properties</include>
+	                <include>*.js</include>
+	                <include>*.jpg</include>
+	            </includes>
+	        </resource>
+	        <resource>
+	            <directory>${project.basedir}/src/main/resources/dictionaries</directory>
+	            <filtering>true</filtering>
+	            <includes>
+	                <include>*.xml</include>
+	                <include>*.config</include>
+	                <include>*.properties</include>
+	            </includes>
+	        </resource>
+    	</resources>
     </build>
 
     <profiles>

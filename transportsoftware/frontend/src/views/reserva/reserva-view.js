@@ -2,17 +2,22 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '@vaadin/vaadin-form-layout/vaadin-form-layout.js';
 import '@vaadin/vaadin-form-layout/vaadin-form-item.js';
-import '@vaadin/vaadin-text-field/vaadin-text-field.js';
-import '@vaadin/vaadin-text-field/vaadin-text-area.js';
 import '@vaadin/vaadin-button/vaadin-button.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout.js';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout.js';
+import '@vaadin/vaadin-text-field/vaadin-text-field.js';
+import '@vaadin/vaadin-form-layout/src/vaadin-form-item.js';
+import '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
+import '@vaadin/vaadin-combo-box/src/vaadin-combo-box.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@vaadin/vaadin-button/src/vaadin-button.js';
+import '@vaadin/vaadin-ordered-layout/src/vaadin-horizontal-layout.js';
 
 class ReservaView extends PolymerElement {
   static get template() {
     return html`
-      <custom-style>
-        <style include="shared-styles lumo-typography">
+<custom-style>
+ <style include="shared-styles lumo-typography">
           #reserva-view {
               display: block;
               padding: 1rem;
@@ -30,39 +35,83 @@ class ReservaView extends PolymerElement {
               justify-content: flex-end
           }
         </style>
-      </custom-style>
-
-      <vaadin-vertical-layout id="wrapper" theme="padding">
-       <h1>Form</h1>
-       <vaadin-form-layout>
-        <vaadin-form-item>
-         <label slot="label">First name</label>
-         <vaadin-text-field id="firstname" class="full-width" value=""></vaadin-text-field>
-        </vaadin-form-item>
-        <vaadin-form-item>
-         <label slot="label">Last name</label>
-         <vaadin-text-field id="lastname" class="full-width" value=""></vaadin-text-field>
-        </vaadin-form-item>
-        <vaadin-form-item colspan="2">
-         <label slot="label">Email</label>
-         <vaadin-text-field id="email" class="full-width" value=""></vaadin-text-field>
-        </vaadin-form-item>
-        <br>
-        <vaadin-form-item colspan="2">
-         <label slot="label">Notes</label>
-         <vaadin-text-area id="notes" class="full-width" colspan=""></vaadin-text-area>
-        </vaadin-form-item>
-       </vaadin-form-layout>
-       <vaadin-horizontal-layout theme="spacing" style="display:flex;flex-wrap:wrap-reverse;width:100%;justify-content:flex-end;">
-        <vaadin-button theme="tertiary" id="cancel" slot="">
-          Cancel
-        </vaadin-button>
-        <vaadin-button theme="primary" id="save">
-          Save
-        </vaadin-button>
-       </vaadin-horizontal-layout>
-      </vaadin-vertical-layout>
-    `;
+</custom-style>
+<vaadin-vertical-layout id="wrapper" theme="padding" style="align-items: stretch;">
+ <vaadin-horizontal-layout theme="spacing" style="align-self: flex-end;">
+  <label id="selectLangLbl">Seleccione un idioma: </label>
+  <vaadin-checkbox id="check_spanish">
+    Español 
+  </vaadin-checkbox>
+  <vaadin-checkbox id="check_english">
+    Inglés 
+  </vaadin-checkbox>
+ </vaadin-horizontal-layout>
+ <h1 id="h1">Reservar un muelle</h1>
+ <vaadin-form-layout style="align-self: center;">
+  <vaadin-form-item style="width: 100%;">
+   <label slot="label" id="doQuestionLbl">¿Qué desea hacer?</label>
+   <vaadin-checkbox id="check_book">
+     Reservar muelle 
+   </vaadin-checkbox>
+   <vaadin-checkbox id="check_modify">
+     Modificar reserva 
+   </vaadin-checkbox>
+  </vaadin-form-item>
+  <br>
+  <vaadin-form-item style="width: 450px;">
+   <label slot="label" id="orderLbl">Pedido</label>
+   <vaadin-text-field id="order" style="width: 400px;"></vaadin-text-field>
+   <vaadin-button theme="icon" aria-label="Add new" id="check">
+    <iron-icon icon="lumo:search"></iron-icon>
+   </vaadin-button>
+  </vaadin-form-item>
+  <vaadin-form-item style="width: 420px;" id="item_plate">
+   <label slot="label" id="plateLbl">Matrícula</label>
+   <vaadin-text-field id="plate" class="full-width" value="" style="width: 400px;"></vaadin-text-field>
+  </vaadin-form-item>
+  <br>
+  <vaadin-form-item colspan="2" id="item_action">
+   <label slot="label" id="actionLbl">Acción</label>
+   <vaadin-combo-box id="combo_action" style="width: 400px;" page-size="5"></vaadin-combo-box>
+  </vaadin-form-item>
+  <vaadin-form-item colspan="2" id="item_type">
+   <label slot="label" id="truckTypeLbl">Tipo de camión</label>
+   <vaadin-combo-box id="combo_type" style="width: 400px;"></vaadin-combo-box>
+  </vaadin-form-item>
+  <vaadin-form-item style="width: 450px;" id="item_date">
+   <label slot="label" id="dateLbl">Fecha de reserva</label>
+   <vaadin-combo-box id="date_selection" style="width: 400px;"></vaadin-combo-box>
+  </vaadin-form-item>
+  <vaadin-form-item id="item_hour">
+   <label slot="label" id="hourLbl">Hora de reserva</label>
+   <vaadin-combo-box id="hour_selection" style="width: 400px;"></vaadin-combo-box>
+   <vaadin-button theme="icon" aria-label="Add new" id="check_hours">
+    <iron-icon icon="lumo:search"></iron-icon>
+   </vaadin-button>
+   <vaadin-button theme="icon" aria-label="Add new" id="check_hours_modify">
+    <iron-icon icon="lumo:edit"></iron-icon>
+   </vaadin-button>
+  </vaadin-form-item>
+ </vaadin-form-layout>
+ <vaadin-horizontal-layout style="display:flex; flex-wrap:wrap-reverse; width:100%; justify-content: flex-end;">
+  <vaadin-button theme="primary error" id="cancel_booking">
+    Cancelar reserva 
+  </vaadin-button>
+  <vaadin-button theme="tertiary" id="cancel" slot="">
+    Vaciar selección 
+  </vaadin-button>
+  <vaadin-button theme="primary" id="check_info">
+    Verificar información 
+  </vaadin-button>
+ </vaadin-horizontal-layout>
+ <vaadin-horizontal-layout style="width: 100%; justify-content: flex-end;" theme="spacing">
+  <label style="align-self: center;" id="navAdminLbl">Si deseas acceder como administrador, pulse en el botón:</label>
+  <vaadin-button theme="icon" aria-label="Add new" id="admin_button">
+   <iron-icon icon="lumo:user"></iron-icon>
+  </vaadin-button>
+ </vaadin-horizontal-layout>
+</vaadin-vertical-layout>
+`;
   }
 
   static get is() {
