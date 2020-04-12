@@ -1,16 +1,31 @@
 package com.ts.app.views.reserva;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import com.ts.app.backend.booking.Obtain_booking_data;
 import com.ts.app.backend.model.booking;
 import com.ts.app.backend.model.dock;
 import com.ts.app.backend.service.BookingService;
+import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
+import com.ts.app.views.utils.DictionaryManager;
+import com.ts.app.views.utils.Notifications;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,29 +37,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import com.ts.app.views.reserva.ReservaView.ReservaViewModel;
-import com.ts.app.views.utils.DictionaryManager;
-import com.ts.app.views.utils.Notifications;
-import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
-import com.vaadin.flow.component.html.H1;
-
 @Route(value = "reserva")
 @RouteAlias(value = "")
 @PageTitle("Reserva")
 @JsModule("./src/views/reserva/reserva-view.js")
 @Tag("reserva-view")
-@CssImport("./styles/reservas-styles.css")
+//@CssImport("./styles/reservas-styles.css")
 public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 
     // This is the Java companion file of a design
@@ -55,7 +53,6 @@ public class ReservaView extends PolymerTemplate<ReservaViewModel> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final String CLASS_NAME = "reservas-styles";
 	private Dialog check_information;
 	
 	public static interface ReservaViewModel extends TemplateModel {

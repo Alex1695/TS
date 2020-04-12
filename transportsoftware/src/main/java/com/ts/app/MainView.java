@@ -26,7 +26,7 @@ import com.ts.app.views.admin.AdminView;
 /**
  * The main view is a top-level placeholder for other views.
  */
-@JsModule("./styles/shared-styles.js")
+//@JsModule("./styles/shared-styles.js")
 @Route("main")
 @PWA(name = "TransportSoftware", shortName = "TransportSoftware")
 @Theme(value = Lumo.class, variant = Lumo.LIGHT)
